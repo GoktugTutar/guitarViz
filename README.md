@@ -2,7 +2,15 @@
 
 Yatay gitar klavyesinde gamları, akorları ve notaların yerlerini keşfetmek için HTML, CSS ve JavaScript ile hazırlanmış uygulama. Bilgisayar ve telefon tarayıcılarında çalışır. Kurulacak bir JavaScript paketi veya veritabanı gerektirmez.
 
-## Çalıştırma
+## İnternetten açma
+
+Yayın adresi: **https://goktugtutar.github.io/guitarViz/**
+
+Uygulama GitHub Pages üzerinde ücretsiz barındırılır. Telefon veya bilgisayardan bu adresi açabilirsiniz; yerel sunucu, aynı Wi-Fi ağı veya açık bir bilgisayar gerekmez.
+
+Yayın kaynağı GitHub reposunda **Settings → Pages → Deploy from a branch → main → / (root)** olarak ayarlanır. `main` dalına yüklenen değişiklikler otomatik olarak yayımlanır; güncellemelerin görünmesi birkaç dakika sürebilir. `.nojekyll` dosyası HTML, CSS ve JavaScript dosyalarının doğrudan sunulmasını sağlar.
+
+## Yerelde çalıştırma
 
 Bu klasörde bir terminal açın. Node.js kuruluysa:
 
@@ -30,7 +38,7 @@ python3 serve.py
 
 Python sunucusu da `--port 5174` seçeneğini destekler. İki sunucudan yalnızca birini çalıştırmanız yeterlidir. JavaScript modülleri kullanıldığı için uygulamayı `index.html` dosyasına çift tıklayarak değil, sunucunun adresinden açın.
 
-## Telefondan açma
+## Yerel geliştirme sürümünü telefondan açma
 
 1. Telefonu ve bilgisayarı aynı Wi-Fi ağına bağlayın.
 2. Sunucuyu bilgisayarda başlatın.
@@ -39,7 +47,7 @@ Python sunucusu da `--port 5174` seçeneğini destekler. İki sunucudan yalnızc
 
 Telefondaki `localhost` adresi bilgisayara ulaşmaz; terminaldeki ağ adresini kullanın. Birden fazla adres görünüyorsa bilgisayarın Wi-Fi bağlantısının IPv4 adresini deneyin. Bağlantı kurulamazsa bilgisayarın güvenlik duvarında Node.js veya Python için yerel ağ erişimini kontrol edin. Misafir Wi-Fi ağları, VPN veya modemlerdeki cihaz yalıtımı aynı ağdaki cihazların birbirine erişmesini engelleyebilir.
 
-Bu yöntem aynı yerel ağ içindir. Başka ağlardan erişim için uygulamanın HTML, CSS ve JavaScript dosyaları bir statik site barındırma hizmetine yüklenebilir; proje otomatik olarak internette yayımlanmaz.
+Bu yöntem yalnızca yerel geliştirme içindir. Normal kullanımda yukarıdaki GitHub Pages adresini açın.
 
 ## Kullanım
 
