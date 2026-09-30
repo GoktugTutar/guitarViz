@@ -9,12 +9,21 @@ An interactive horizontal guitar fretboard built with HTML, CSS and JavaScript. 
 - **Explore:** eight scales, eight chord types and a scale/chord overlay. Switch between note names, intervals and fret numbers. Explorer settings persist in the current browser.
 - **Progressions:** eight major/minor presets, Roman numerals, chord functions and explanations of the seven diatonic triads. Play four beats per chord at 40–180 BPM, with optional looping.
 - **Chord Finder:** see every chord-tone location or browse playable positions with fret and finger numbers, muted strings and barres.
+- **TAB Editor:** build 1–8 bars in 4/4 with chords or rests at any sixteenth-note slot. Choose whole, half, quarter, eighth or sixteenth durations, move/edit events, use custom frets (0–24 or mute on each string), and play at 40–180 BPM. Undo/redo, local autosave and plain-text TAB download are included.
 - **Info:** a top-right guide to the controls, notation, sound and mobile fretboard navigation.
 - Standard, Drop D and half-step-down tunings; 12, 15 or 24 frets; synthesized plucked-string audio.
 
 The high string is at the top, as in TAB. Swipe horizontally on smaller screens. R means the root (degree 1), 0 means an open string and × means mute. Finger numbers are 1 index, 2 middle, 3 ring and 4 pinky.
 
 The position library currently covers common open chords and movable E/A shapes. It is **not a complete five-shape CAGED library**. Some open C/G/D shapes are included. Chord Finder mutes string 6 in Drop D to retain verified fingerings on the upper strings.
+
+## Writing TAB
+
+Open the [TAB Editor](https://goktugtutar.github.io/guitarViz/?tab=editor). Choose a chord and a suggested position, or change the six fret controls. Select a duration and bar/beat location, then click **Place chord**. The cursor advances by that duration. Empty slots are silent; **Place rest** adds an explicit rest.
+
+Click an event to load it into the controls, change its frets, duration or bar/beat, then click **Update chord** or **Update rest**. Overlaps and events beyond the last bar are rejected without changing the score. Long notes can cross bar lines. Changing the tuning retains fret numbers and recalculates pitches/chord labels.
+
+Custom voicings that do not contain exactly the selected chord tones are labeled **Custom**. Physical playability of custom fingerings is up to the player. Scores save only in the current browser; the download is a text TAB with beat counts, durations and sustain markers. This editor currently uses 4/4 with a sixteenth-note grid; dotted notes and triplets are not included.
 
 ## Deployment
 
@@ -51,7 +60,7 @@ The app and three static guides have English metadata, canonical URLs and social
 - `/guitarViz/guitar-chords/`
 - `/guitarViz/chord-progressions/`
 
-Guide buttons open the relevant tool with `?tab=explore`, `?tab=chords` or `?tab=progressions`. All app query variants canonicalize to the home page.
+Guide buttons open the relevant tool with `?tab=explore`, `?tab=chords` or `?tab=progressions` (the editor also supports `?tab=editor`). All app query variants canonicalize to the home page.
 
 ### Google Search Console setup
 

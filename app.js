@@ -1,5 +1,5 @@
-import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, getChordVoicing, spelledNoteName, degreeLabel } from './music.js?v=3';
-import { initLearning } from './learning.js?v=3';
+import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, getChordVoicing, spelledNoteName, degreeLabel } from './music.js?v=4';
+import { initLearning } from './learning.js?v=4';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -192,9 +192,9 @@ async function getAudioContext() {
   try { audioContext ||= new Audio(); if (audioContext.state === 'suspended') await audioContext.resume(); return audioContext; }
   catch { toast('Audio could not start. Tap a note to try again.'); return null; }
 }
-async function pluck(midi, delay=0, volume=.62) {
+async function pluck(midi, delay=0, volume=.62, duration=1.7) {
   const token = sequenceToken, context = await getAudioContext(); if (!context || token !== sequenceToken) return;
-  const rate = context.sampleRate, frequency = 440*2**((midi-69)/12), duration = 1.7;
+  const rate = context.sampleRate, frequency = 440*2**((midi-69)/12);
   const length = Math.floor(rate*duration), period = Math.max(2,Math.round(rate/frequency));
   const buffer = context.createBuffer(1,length,rate), samples = buffer.getChannelData(0), ring = new Float32Array(period);
   for(let i=0;i<period;i++) ring[i]=(Math.random()*2-1)*.7;
@@ -221,6 +221,7 @@ learning = initLearning({
     if (activePage === 'explore') explorerState = {...state};
     activePage = page; toolInfo = null;
     $('.app-layout').classList.toggle('tool-mode',page !== 'explore');
+    $('#explore-panel').hidden = page === 'editor';
     $('#explore-panel').setAttribute('role',page === 'explore'?'tabpanel':'region');
     $('#explore-panel').setAttribute('aria-labelledby','tab-'+page);
     $('#tab-card').hidden = true;
@@ -230,6 +231,12 @@ learning = initLearning({
   getTuning: () => state.tuning,
   stopAudio: stopPlayback,
   prepareAudio: getAudioContext,
+  playTimedChord(notes, duration) {
+    [...notes].reverse().forEach((note,index) => {
+      const delay=index*.006;
+      pluck(note.midi,delay,.38,Math.max(.02,duration-delay));
+    });
+  },
   showChord(info) {
     stopPlayback(); toolInfo = info;
     const rootSpelling = info.symbol.match(/^[A-G][♯♭]*/)[0];

@@ -1,6 +1,7 @@
-import { NOTES, CHORDS, spelledNoteName } from './music.js?v=3';
-import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=3';
-import { getChordPositions } from './chord-positions.js?v=3';
+import { NOTES, CHORDS, spelledNoteName } from './music.js?v=4';
+import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=4';
+import { getChordPositions } from './chord-positions.js?v=4';
+import { initTabEditor } from './tab-editor.js?v=4';
 
 /** The learning tools share the original fretboard and audio renderer. */
 export function initLearning(bridge) {
@@ -30,6 +31,7 @@ export function initLearning(bridge) {
     <div id="finder-positions"><div class="position-picker" id="position-picker" role="group" aria-label="Chord positions"></div><div class="position-summary"><button class="position-arrow" id="previous-position" aria-label="Previous chord position">←</button><div><strong id="position-name"></strong><span id="position-description"></span></div><button class="position-arrow" id="next-position" aria-label="Next chord position">→</button></div><div id="fingering-table" class="fingering-table"></div><p class="fingering-help">0 = open string · × = mute · Fingers: 1 index, 2 middle, 3 ring, 4 pinky. A finger spanning multiple strings forms a barre.</p></div>
     <p id="finder-all-help" class="all-notes-help" hidden>Every colored dot is a chord tone. These dots are possible note locations, not a single fingering. Choose “Playable positions” to find a shape to play.</p>`;
 
+  const editor = initTabEditor({...bridge, stopOthers:stop});
   $$('.page-tabs [data-page]').forEach(button => {
     button.addEventListener('click',()=>setPage(button.dataset.page));
     button.addEventListener('keydown',event=>{
@@ -55,10 +57,11 @@ export function initLearning(bridge) {
   window.addEventListener('pagehide',stop);
 
   function setPage(page) {
-    if(!['explore','progressions','chords'].includes(page)||state.page===page)return;
+    if(!['explore','progressions','chords','editor'].includes(page)||state.page===page)return;
     stop(); state.page=page;state.position=0;
     $$('.page-tabs [data-page]').forEach(button=>{const active=button.dataset.page===page;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;});
     $('#progressions-panel').hidden=page!=='progressions';$('#chords-panel').hidden=page!=='chords';
+    $('#editor-panel').hidden=page!=='editor';editor.activate(page==='editor');
     bridge.setPage(page);
     if(page==='progressions')renderProgression(); else if(page==='chords')renderFinder();
   }
@@ -121,7 +124,7 @@ export function initLearning(bridge) {
     $$('.beat-meter i').forEach((dot,i)=>dot.classList.toggle('active',playing&&i===currentBeat));
     $$('#progression-steps button').forEach((button,index)=>button.classList.toggle('is-playing',playing&&!state.customStep&&index===state.step));
   }
-  function stop(){transportToken++;clearTimeout(timer);timer=null;playing=false;bridge.stopAudio();updateTransport();}
+  function stop(){transportToken++;clearTimeout(timer);timer=null;playing=false;editor.stop();bridge.stopAudio();updateTransport();}
   async function start(){
     stop();const token=transportToken;playing=true;updateTransport();
     if(!await bridge.prepareAudio()||token!==transportToken){if(token===transportToken){playing=false;updateTransport();}return;}

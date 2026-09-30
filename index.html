@@ -18,10 +18,11 @@
   <meta name="twitter:description" content="Explore guitar scales, chords and progressions. Find notes, intervals and playable positions on a free horizontal fretboard with TAB and audio.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="learning.css?v=3">
-  <link rel="stylesheet" href="site.css?v=3">
+  <link rel="stylesheet" href="learning.css?v=4">
+  <link rel="stylesheet" href="site.css?v=4">
+  <link rel="stylesheet" href="tab-editor.css?v=4">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"perde. Guitar Explorer","url":"https://goktugtutar.github.io/guitarViz/","description":"An interactive guitar fretboard for scales, chord positions, intervals, TAB and chord progressions.","applicationCategory":"EducationalApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and a modern web browser.","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-  <script type="module" src="app.js?v=3"></script>
+  <script type="module" src="app.js?v=4"></script>
 </head>
 <body>
   <header class="site-header">
@@ -36,9 +37,11 @@
       <button id="tab-explore" role="tab" aria-selected="true" aria-controls="explore-panel" data-page="explore" tabindex="0"><span>01</span> Explore</button>
       <button id="tab-progressions" role="tab" aria-selected="false" aria-controls="progressions-panel" data-page="progressions" tabindex="-1"><span>02</span> Progressions</button>
       <button id="tab-chords" role="tab" aria-selected="false" aria-controls="chords-panel" data-page="chords" tabindex="-1"><span>03</span> Chord Finder</button>
+      <button id="tab-editor" role="tab" aria-selected="false" aria-controls="editor-panel" data-page="editor" tabindex="-1"><span>04</span> TAB Editor</button>
     </nav>
     <section id="progressions-panel" class="learning-panel" role="tabpanel" aria-labelledby="tab-progressions" hidden></section>
     <section id="chords-panel" class="learning-panel" role="tabpanel" aria-labelledby="tab-chords" hidden></section>
+    <section id="editor-panel" class="learning-panel" role="tabpanel" aria-labelledby="tab-editor" hidden></section>
     <div class="app-layout" id="explore-panel" role="tabpanel" aria-labelledby="tab-explore">
       <aside class="controls" aria-label="Fretboard settings">
         <div class="panel-top"><h2>Explore</h2><button id="reset-button" class="text-icon" aria-label="Reset settings" title="Reset settings">↺</button></div>
@@ -71,6 +74,7 @@
     <h3>01 · Explore</h3><p>Pick a root note and a scale or chord. Yellow dots mark the root. Use <strong>Layer</strong> to compare a scale and chord: two-color dots belong to both.</p>
     <h3>02 · Progressions</h3><p>Choose a key and a chord progression. Tap a chord to see its notes, role and position. Set the tempo and press <strong>Play progression</strong> to hear four beats per chord. Turn on <strong>Loop</strong> to repeat.</p>
     <h3>03 · Chord Finder</h3><p>Choose any root and one of eight chord types. Switch between <strong>All note locations</strong> and <strong>Playable positions</strong>. Use the arrows or position buttons to explore different fingerings.</p>
+    <h3>04 · TAB Editor</h3><p>Choose a chord and position, or enter your own frets. Pick a whole, half, quarter, eighth or sixteenth note and place it at a bar and beat. Click an event to edit or move it. Add rests, undo changes, play at your tempo or download the TAB. Your score saves in this browser.</p>
     <h3>Read the fretboard</h3><ul><li><strong>Notes:</strong> letter names such as G, A and B.</li><li><strong>Intervals:</strong> degrees relative to the root. In G major, G = R (1), A = 2 and B = 3.</li><li><strong>TAB:</strong> fret numbers. 0 means an open string; × means mute.</li><li><strong>Fingers:</strong> available for playable positions. 1 = index, 2 = middle, 3 = ring, 4 = pinky. A connecting bar shows a barre.</li></ul>
     <p>The high string is on top, just like TAB. On a phone, swipe the fretboard sideways. Tap a note to hear it, or use the play button to hear a scale or chord. The speaker button controls sound when tapping notes.</p>
     <div class="help-note">Try standard, Drop D or half-step-down tuning, and 12, 15 or 24 frets. Explorer settings are saved in this browser.<br>♯ = sharp (one semitone higher) · ♭ = flat (one semitone lower)</div>

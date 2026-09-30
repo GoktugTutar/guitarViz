@@ -28,7 +28,7 @@ test('all public pages are crawlable English documents with distinct metadata an
       let local = decodeURIComponent(url.pathname.slice(new URL(base).pathname.length));
       if (!local || local.endsWith('/')) local += 'index.html';
       assert.ok(fs.existsSync(path.join(root, local)), `${page}: missing ${local}`);
-      if (url.searchParams.has('tab')) assert.ok(['explore','chords','progressions'].includes(url.searchParams.get('tab')));
+      if (url.searchParams.has('tab')) assert.ok(['explore','chords','progressions','editor'].includes(url.searchParams.get('tab')));
     }
     assert.doesNotMatch(doc.body.textContent, /[çğıöşüÇĞİÖŞÜ]/);
     if (page) assert.ok(doc.querySelector('article').textContent.split(/\s+/).length >= 200);

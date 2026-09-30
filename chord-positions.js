@@ -1,4 +1,4 @@
-import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=3';
+import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=4';
 
 // Every array follows TAB: high e, B, G, D, A, low E. These are explicit
 // fingerings, not arbitrary collections of chord tones found on the neck.
