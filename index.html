@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101514">
+  <meta name="description" content="Gitar klavyesini keşfet. Gamları, akorları ve notaları yatay TAB düzeninde gör, dokun ve dinle.">
+  <title>perde. — Gitar klavyesini keşfet</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Perde ana sayfa"><img src="assets/icon.svg" alt="" width="33" height="33"><span>perde<span class="brand-dot">.</span></span></a>
+    <span class="header-divider"></span><span class="header-caption">Gitarı gör. Müziği keşfet.</span>
+    <div class="header-actions"><span class="live-label"><i></i> İnteraktif klavye</span><button class="icon-button" id="help-button" aria-label="Nasıl kullanılır?" title="Nasıl kullanılır?"><span>?</span></button></div>
+  </header>
+  <main>
+    <section class="intro"><div><div class="eyebrow"><span></span> GİTAR KEŞİF ALANI</div><h1>Her nota, <em>yeni bir yol.</em></h1><p>Gamları ve akorları gör. Klavyenin parçalarını birleştir.</p></div><div class="intro-aside"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 18V5l12-2v13M9 8l12-2"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Bir notaya dokun.<br><strong>Keşfetmeye kulak ver.</strong></span></div></section>
+    <div class="app-layout">
+      <aside class="controls" aria-label="Klavye ayarları">
+        <div class="panel-top"><h2>Keşfet</h2><button id="reset-button" class="text-icon" aria-label="Ayarları sıfırla" title="Ayarları sıfırla">↺</button></div>
+        <div class="segmented mode-control" role="group" aria-label="Keşif modu"><button data-mode="scale" class="active" aria-pressed="true">Gam</button><button data-mode="chord" aria-pressed="false">Akor</button><button data-mode="layer" aria-pressed="false">Katman</button></div>
+        <section class="control-section"><div class="field-heading"><h3>KÖK NOTA</h3><span id="root-solfege">Sol</span></div><div class="root-grid" id="root-options" role="group" aria-label="Kök nota seçimi"></div></section>
+        <section class="control-section" id="scale-section"><div class="field-heading"><h3><span class="tiny-dot cyan"></span> <span id="scale-label">GAM TÜRÜ</span></h3><span>8 gam</span></div><div class="choice-grid" id="scale-options" role="group" aria-label="Gam türü"></div></section>
+        <section class="control-section" id="chord-section" hidden><div class="field-heading"><h3><span class="tiny-dot pink"></span> AKOR TÜRÜ</h3><span>8 akor</span></div><div class="choice-grid" id="chord-options" role="group" aria-label="Akor türü"></div><label class="select-label" for="shape-select">Akor pozisyonu</label><div class="select-wrap"><select id="shape-select"><option value="all">Tüm klavye</option><option value="auto">Uygun akor şekli</option><option value="E">E şekli</option><option value="A">A şekli</option></select></div></section>
+        <section class="control-section target-section"><div class="field-heading"><h3>ARALIK VURGUSU</h3><span>İsteğe bağlı</span></div><div class="interval-options" id="target-options" role="group" aria-label="Vurgulanacak aralık"></div></section>
+        <div class="sidebar-tip"><span class="tip-icon">✧</span><p><strong>Küçük bir ipucu</strong><span id="sidebar-tip-text">Sarı notalar kök notandır. Melodine buradan başlamayı dene.</span></p></div>
+      </aside>
+      <div class="workspace">
+        <section class="fretboard-card" aria-label="Yatay gitar klavyesi">
+          <div class="board-heading"><div class="selection-title"><span class="eyebrow" id="selection-eyebrow">GAM HARİTASI</span><h2 id="selection-title">G <span>Majör</span><span class="title-dot"></span></h2><p id="selection-description">Aydınlık, açık ve tanıdık bir ses.</p></div><div class="board-settings"><label class="tuning-control"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 4v16M12 4v16M19 4v16M2 9h6M9 15h6M16 7h6"/></svg><select id="tuning-select" aria-label="Gitar akordu"><option value="standard">Standart akort</option><option value="dropD">Drop D</option><option value="halfStepDown">Yarım ses pes</option></select></label><span id="tuning-notes">E A D G B e</span></div></div>
+          <div class="board-toolbar"><div class="segmented display-control" role="group" aria-label="Nota gösterimi"><button data-display="notes" class="active" aria-pressed="true">Notalar</button><button data-display="intervals" aria-pressed="false">Aralıklar</button><button data-display="tab" aria-pressed="false">TAB</button></div><div class="fret-control"><label for="fret-select">Perde</label><select id="fret-select"><option value="12">12</option><option value="15">15</option><option value="24">24</option></select><button id="sound-button" class="icon-button sound-button" aria-label="Nota sesini kapat" aria-pressed="true" title="Nota sesi açık"></button></div></div>
+          <div class="board-surface"><div class="board-scroll" id="board-scroll" tabindex="0" role="region" aria-label="Yatay kaydırılabilir gitar klavyesi"><div class="fretboard" id="fretboard"></div></div><div class="board-under"><span class="orientation"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M5 5l3-3 3 3M5 11l3 3 3-3" fill="none" stroke="currentColor"/></svg> İnce tel üstte · TAB düzeni</span><span class="scroll-hint">Kaydırarak keşfet <span>↔</span></span><span class="board-count" id="board-count">6 tel / 12 perde</span></div></div>
+          <div class="board-legend"><div class="legend-items"><span><i class="legend-dot root"></i>Kök nota</span><span id="scale-legend"><i class="legend-dot scale"></i>Gam notası</span><span id="chord-legend" hidden><i class="legend-dot chord"></i>Akor notası</span><span id="overlap-legend" hidden><i class="legend-dot overlap"></i>Ortak nota</span></div><span class="click-hint">♫ <span>Dinlemek için notaya dokun</span></span></div>
+        </section>
+        <section class="notes-card" aria-label="Seçili gam veya akor notaları"><div class="notes-card-heading"><div><span class="eyebrow" id="notes-eyebrow">GAMIN NOTALARI</span><span class="note-count" id="note-count">7 nota</span></div><button class="play-button" id="play-button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m5 3 8 5-8 5z" fill="currentColor"/></svg><span>Gamı dinle</span></button></div><div class="note-chips" id="note-chips"></div><div class="formula-line"><span>ARALIK FORMÜLÜ</span><p id="formula">1 — 2 — 3 — 4 — 5 — 6 — 7</p><span id="formula-detail">Tam · Tam · Yarım · Tam · Tam · Tam · Yarım</span></div></section>
+        <div class="lower-grid"><section class="practice-card"><div class="small-card-icon">⌁</div><div><span class="eyebrow">BİRAZ PRATİK</span><h3 id="practice-title">Bir gam, pek çok olasılık.</h3><p id="practice-text">Bir kök nota bul. Sonraki notaları sırayla çal, ardından köke geri dön. Kulağın yolu hatırlasın.</p><button class="inline-link" id="practice-button">TAB dizisini göster <span>↗</span></button></div></section><section class="explore-card"><div class="explore-card-header"><span class="eyebrow">BİR SONRAKİ DURAK</span><span>↗</span></div><button class="preset" data-preset="pentatonic"><div><strong>A Minör pentatonik</strong><span>5 nota, sınırsız melodi.</span></div><span class="preset-icon">→</span></button><button class="preset" data-preset="layer"><div><strong>G Majör + G akoru</strong><span>Gam ve akorun buluştuğu yer.</span></div><span class="preset-icon">→</span></button></section></div>
+        <section class="tab-card" id="tab-card" hidden><div class="notes-card-heading"><div><span class="eyebrow">ÇALMAK İÇİN TAB</span><h3 id="tab-title">G Majör · bir oktav</h3></div><button class="icon-button" id="close-tab" aria-label="TAB dizisini kapat">×</button></div><p class="tab-description" id="tab-description">Soldan sağa oku. Sayılar basacağın perdeleri gösterir; 0 açık teldir.</p><div class="tab-scroll"><pre id="tab-output" aria-label="Gitar tablatürü"></pre></div></section>
+      </div>
+    </div>
+    <footer><span class="footer-brand">perde.</span><span>Ezberlemekten öte, klavyeyi anlamak.</span><span class="footer-right">6 tel. Sonsuz olasılık.</span></footer>
+  </main>
+  <div class="note-toast" id="note-toast" role="status" aria-live="polite"></div>
+  <dialog id="help-dialog"><button class="dialog-close icon-button" id="close-help" aria-label="Yardımı kapat">×</button><span class="eyebrow">PERDE'YE HOŞ GELDİN</span><h2>Klavyeyi birlikte çözelim.</h2><p>Önce bir <strong>kök nota</strong> ve <strong>gam veya akor</strong> seç. Renkli noktalar, seçtiğin notaların klavyedeki yerlerini gösterir.</p><ul><li><strong>Notalar:</strong> C, D, E gibi nota adlarını gör.</li><li><strong>Aralıklar:</strong> Kök notaya olan uzaklığı gör. R, kök notadır.</li><li><strong>TAB:</strong> Noktalarda basacağın perde numarasını gör. 0, açık teldir.</li><li><strong>Katman:</strong> Bir gam ve akoru aynı anda karşılaştır.</li></ul><p>İnce Mi en üstte, kalın Mi en altta. Telefonunda klavyeyi sağa sola kaydır. Bir notaya dokunarak sesini dinle.</p><div class="help-note">C = Do · D = Re · E = Mi · F = Fa · G = Sol · A = La · B = Si<br>♯ = diyez (yarım ses ince) · ♭ = bemol (yarım ses pes)</div><button class="primary-button" id="start-exploring">Keşfetmeye başla →</button></dialog>
+</body>
+</html>
