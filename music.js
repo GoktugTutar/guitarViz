@@ -99,11 +99,11 @@ export function degreeLabel(semitones, definitionKey = 'major', kind = 'scale') 
 }
 
 /** Spells a pitch with the correct scale/chord letter, retaining sharp roots. */
-export function spelledNoteName(root, interval, definitionKey = 'major', kind = 'scale') {
+export function spelledNoteName(root, interval, definitionKey = 'major', kind = 'scale', rootSpelling = NOTES[mod12(root)]) {
   assertRoot(root);
   const degree = degreeLabel(interval, definitionKey, kind);
   const degreeNumber = degree === 'R' ? 1 : Number(degree.replace(/[♭♯]/g, ''));
-  const rootLetter = NOTES[mod12(root)][0];
+  const rootLetter = rootSpelling[0];
   const letterIndex = (NOTE_LETTERS.indexOf(rootLetter) + degreeNumber - 1) % 7;
   const pitch = mod12(root + interval);
   const accidental = mod12(pitch - NATURAL_PITCHES[letterIndex] + 6) - 6;
@@ -128,7 +128,7 @@ function getDefinition(collection, key, label) {
 }
 
 export function buildFretboard({
-  root = 0, scale = 'major', chord = 'major', mode = 'scale', tuning = 'standard', fretCount = 15,
+  root = 0, scale = 'major', chord = 'major', mode = 'scale', tuning = 'standard', fretCount = 15, rootSpelling,
 } = {}) {
   assertRoot(root);
   if (!Number.isInteger(fretCount) || fretCount < 0 || fretCount > 36) {
@@ -150,7 +150,7 @@ export function buildFretboard({
       const contextKind = scaleContext ? 'scale' : 'chord';
       return {
         stringIndex, fret, midi, pitchClass,
-        note: active ? spelledNoteName(root, distance, contextKey, contextKind) : noteName(midi),
+        note: active ? spelledNoteName(root, distance, contextKey, contextKind, rootSpelling) : noteName(midi),
         interval: active ? degreeLabel(distance, contextKey, contextKind) : intervalLabel(distance),
         isRoot: distance === 0, inScale, inChord, active,
       };

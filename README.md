@@ -51,6 +51,18 @@ Bu yöntem yalnızca yerel geliştirme içindir. Normal kullanımda yukarıdaki 
 
 ## Kullanım
 
+### Sekmeler
+
+- **Keşfet:** Gam, akor ve katman haritaları. Başka bir sekmeye geçip döndüğünüzde bu ekrandaki seçimleriniz korunur.
+- **Progresyonlar:** Majör/minör ton ve sekiz hazır yürüyüşten birini seçin. Roma rakamı, akor adı ve işlev açıklaması birlikte gösterilir. Akora dokunun, yatay klavyede pozisyonunu görün. Örneğin G majörde I–V–vi–IV = G–D–Em–C. Tonun yedi diyatonik akorunu ayrıca inceleyebilirsiniz.
+- **Akor Bul:** Kök nota ve akor türünü seçin. Tüm nota yerleri ile çalınabilir açık/bareli pozisyonlar arasında geçiş yapın. Pozisyonları düğmeler veya oklarla gezin; perde ve parmak numaralarını tablodan ya da **Parmaklar** görünümünden okuyun.
+
+Progresyonlar 40–180 BPM aralığında, her akor dört vuruş sürecek şekilde çalınır. **Tekrarla** döngüyü açar; durdurma, sekme/ton/tempo değişikliği veya sayfadan ayrılma çalmayı sonlandırır. Akor Bul'da **Akoru dinle** seçilen tutuşu çalar.
+
+Parmak numaraları: 1 = işaret, 2 = orta, 3 = yüzük, 4 = serçe. 0 açık tel, × susturulan teldir. Parmak numaraları bir tutuş önerisidir. Drop D pozisyonlarında altıncı tel susturulur; bu telin değiştirilmesi diğer tellerdeki akor seslerini etkilemez.
+
+### Keşfet kontrolleri
+
 - **Gam:** Bir kök nota ve gam seçerek klavyedeki ilgili notaları görün.
 - **Akor:** Kök nota ve akor türü üzerinden akor seslerini inceleyin.
 - **Katman:** Gam ve akoru birlikte göstererek ortak sesleri karşılaştırın.
@@ -63,10 +75,11 @@ Klavyede ince teller üstte, kalın teller altta yer alır. TAB görünümündek
 
 ## Kontrol
 
-Müzik hesaplamalarının otomatik kontrollerini çalıştırmak için:
+Müzik hesaplamaları ve arayüz etkileşimlerinin otomatik kontrollerini çalıştırmak için geliştirme bağımlılıklarını kurun:
 
 ```sh
-node --test
+npm ci
+npm test
 ```
 
-Güncel bir Node.js sürümü kullanın. Geliştirme sunucusu yalnızca statik dosyaları sunar; uygulama hesaplamaları ve ses üretimi tarayıcıda yapılır.
+Güncel bir Node.js sürümü kullanın. Testlerde jsdom ve sahte zamanlayıcı kullanılır; bunlar gerçek tarayıcı yerleşimi veya ses tınısını ölçmez. Uygulamayı çalıştırmak için bu paketler gerekmez. Geliştirme sunucusu yalnızca statik dosyaları sunar; uygulama hesaplamaları ve ses üretimi tarayıcıda yapılır.
