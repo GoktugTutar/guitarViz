@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Yatay gitar klavyesi, gamlar, akorlar ve TAB",
+  "description": "Interactive guitar fretboard, scales, chords, progressions and TAB",
   "scripts": {
     "start": "node serve.mjs",
     "dev": "node serve.mjs",

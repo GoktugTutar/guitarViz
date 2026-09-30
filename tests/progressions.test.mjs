@@ -5,7 +5,7 @@ import { PROGRESSIONS, PROGRESSION_HELP, getDiatonicChords, getProgression } fro
 
 test('G major pop progression resolves Roman degrees into G, D, Em and C', () => {
   const progression = getProgression(7, 'major', 'pop');
-  assert.equal(progression.keyName, 'G majör');
+  assert.equal(progression.keyName, 'G major');
   assert.equal(progression.roman, 'I–V–vi–IV');
   assert.deepEqual(progression.steps.map(step => step.symbol), ['G', 'D', 'Em', 'C']);
   assert.deepEqual(progression.steps.map(step => step.root), [7, 2, 4, 0]);
@@ -17,7 +17,7 @@ test('A minor harmonic progression raises G to G sharp for the E major dominant'
   assert.deepEqual(progression.steps.map(step => step.symbol), ['Am', 'Dm', 'E']);
   assert.deepEqual(progression.steps.map(step => step.roman), ['i', 'iv', 'V']);
   assert.match(progression.steps[2].explanation, /G → G♯/);
-  assert.match(progression.steps[2].explanation, /armonik minör/);
+  assert.match(progression.steps[2].explanation, /harmonic minor/);
   assert.deepEqual(getProgression(9, 'minor', 'natural').steps.map(step => step.symbol), ['Am', 'Dm', 'Em']);
 });
 
@@ -67,8 +67,8 @@ test('every preset resolves correctly in all keys; harmonic V alone raises the m
 
 test('minor Roman numbering and help consistently use natural-minor degree numbers', () => {
   assert.deepEqual(getDiatonicChords(9, 'minor').map(step => step.roman), ['i', 'ii°', 'III', 'iv', 'v', 'VI', 'VII']);
-  assert.match(PROGRESSION_HELP, /Büyük harf majör, küçük harf minör/);
-  assert.match(PROGRESSION_HELP, /doğal minör/);
+  assert.match(PROGRESSION_HELP, /Uppercase means major, lowercase means minor/);
+  assert.match(PROGRESSION_HELP, /natural minor/);
 });
 
 test('invalid input is rejected and resolved data cannot mutate future results', () => {
@@ -78,7 +78,7 @@ test('invalid input is rejected and resolved data cannot mutate future results',
   assert.throws(() => getDiatonicChords(0, '__proto__'), RangeError);
   assert.throws(() => getProgression(0, 'major', 'missing'), RangeError);
   assert.throws(() => getProgression(0, 'minor', 'pop'), RangeError);
-  assert.equal(getProgression(19).keyName, 'G majör');
+  assert.equal(getProgression(19).keyName, 'G major');
   const result = getProgression(7);
   result.steps[0].symbol = 'changed';
   result.steps.reverse();

@@ -8,13 +8,16 @@ import FakeTimers from '@sinonjs/fake-timers';
 // This checks interaction/state behavior, not browser layout or audible timbre.
 test('learning tabs, chord positions and progression transport work together', async (t) => {
   const dom = new JSDOM(fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8'), {
-    url: 'https://goktugtutar.github.io/guitarViz/', pretendToBeVisual: true,
+    url: 'https://goktugtutar.github.io/guitarViz/?tab=chords', pretendToBeVisual: true,
   });
   const { window } = dom;
   const clock = FakeTimers.install({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
   Object.assign(globalThis, { window, document: window.document, localStorage: window.localStorage });
   window.matchMedia = () => ({ matches: false });
   window.HTMLElement.prototype.scrollIntoView = function () {};
+  // jsdom does not implement native dialog methods; test the actual event wiring.
+  window.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+  window.HTMLDialogElement.prototype.close = function () { this.open = false; };
   const sound = { starts: 0, stops: 0 };
   window.AudioContext = class {
     constructor() { sound.context = this; }
@@ -31,7 +34,27 @@ test('learning tabs, chord positions and progression transport work together', a
     const select = (s, value) => { $(s).value = String(value); $(s).dispatchEvent(new window.Event('change')); };
     const activeNotes = () => $$('.fret-note:not(.inactive)');
 
-    await t.test('Keşfet settings survive tool use; page tabs support keyboard navigation', () => {
+    await t.test('guide deep links open Chord Finder and Info explains all tools in English', () => {
+      assert.equal($('#tab-chords').getAttribute('aria-selected'), 'true');
+      assert.equal($('#chords-panel').hidden, false);
+      assert.ok(activeNotes().length > 0 && activeNotes().length <= 6);
+      assert.equal(document.documentElement.lang, 'en');
+      assert.match($('#help-button').textContent, /Info/);
+      click('#help-button');
+      assert.equal($('#help-dialog').open, true);
+      assert.match($('#help-dialog').textContent, /Explore/);
+      assert.match($('#help-dialog').textContent, /Progressions/);
+      assert.match($('#help-dialog').textContent, /Chord Finder/);
+      assert.match($('#help-dialog').textContent, /G = R \(1\), A = 2/);
+      click('#close-help');
+      assert.equal($('#help-dialog').open, false);
+      click('#help-button'); click('#start-exploring');
+      assert.equal($('#help-dialog').open, false);
+      assert.doesNotMatch(document.body.textContent, /[çğıöşüÇĞİÖŞÜ]/);
+      click('#tab-explore');
+    });
+
+    await t.test('Explore settings survive tool use; page tabs support keyboard navigation', () => {
       click('[data-root="9"]'); click('[data-scale="minorPentatonic"]'); click('[data-display="intervals"]');
       const saved = localStorage.getItem('perde-settings');
       click('#tab-progressions');
@@ -42,7 +65,7 @@ test('learning tabs, chord positions and progression transport work together', a
       assert.equal(localStorage.getItem('perde-settings'), saved);
       $('#tab-chords').dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
       assert.equal($('#tab-explore').getAttribute('aria-selected'), 'true');
-      assert.match($('#selection-title').textContent, /A Minör pentatonik/);
+      assert.match($('#selection-title').textContent, /A Minor pentatonic/);
       assert.equal($('[data-display="intervals"]').getAttribute('aria-pressed'), 'true');
     });
 
@@ -67,7 +90,7 @@ test('learning tabs, chord positions and progression transport work together', a
       assert.equal($$('#fingering-table tbody tr')[0].textContent.includes('×'), true);
       select('#tuning-select', 'dropD');
       assert.ok(activeNotes().every(x => x.dataset.string !== '5'));
-      assert.match($('#position-name').textContent, /6. tel sessiz/);
+      assert.match($('#position-name').textContent, /Mute string 6/);
       select('#tuning-select', 'standard');
     });
 
@@ -94,21 +117,21 @@ test('learning tabs, chord positions and progression transport work together', a
       assert.equal($('#tempo-value').textContent, '120 BPM');
       const before = sound.starts;
       click('#progression-play'); await clock.tickAsync(0);
-      assert.match($('#progression-play').textContent, /Durdur/);
+      assert.match($('#progression-play').textContent, /Stop/);
       assert.match($('#selection-title').textContent, /^G/);
       assert.ok(sound.starts > before);
       await clock.tickAsync(1999); assert.match($('#selection-title').textContent, /^G/);
       await clock.tickAsync(1); assert.match($('#selection-title').textContent, /^D/);
       await clock.tickAsync(2000); assert.match($('#selection-title').textContent, /^Em/);
       await clock.tickAsync(2000); assert.match($('#selection-title').textContent, /^C/);
-      await clock.tickAsync(2000); assert.match($('#progression-play').textContent, /Yürüyüşü dinle/);
+      await clock.tickAsync(2000); assert.match($('#progression-play').textContent, /Play progression/);
       assert.equal($$('.beat-meter .active').length, 0);
     });
 
     await t.test('repeat loops; switching tabs and changing tempo cancel pending playback', async () => {
       $('#progression-loop').checked = true; $('#progression-loop').dispatchEvent(new window.Event('change'));
       click('#progression-play'); await clock.tickAsync(8000);
-      assert.match($('#progression-play').textContent, /Durdur/);
+      assert.match($('#progression-play').textContent, /Stop/);
       assert.match($('#selection-title').textContent, /^G/);
       click('#tab-chords'); const starts = sound.starts;
       await clock.tickAsync(10000); assert.equal(sound.starts, starts);
@@ -116,14 +139,14 @@ test('learning tabs, chord positions and progression transport work together', a
       $('#progression-tempo').value = '100'; $('#progression-tempo').dispatchEvent(new window.Event('input'));
       const afterTempo = sound.starts;
       await clock.tickAsync(10000); assert.equal(sound.starts, afterTempo);
-      assert.match($('#progression-play').textContent, /Yürüyüşü dinle/);
+      assert.match($('#progression-play').textContent, /Play progression/);
     });
 
     await t.test('the original single-scale play button still stops on its second click', async () => {
       click('#tab-explore'); click('#play-button'); await clock.tickAsync(0);
-      assert.match($('#play-button').textContent, /Durdur/);
+      assert.match($('#play-button').textContent, /Stop/);
       click('#play-button'); await clock.tickAsync(10000);
-      assert.match($('#play-button').textContent, /Gamı dinle/);
+      assert.match($('#play-button').textContent, /Play scale/);
       assert.ok(sound.stops > 0);
     });
 
@@ -136,7 +159,7 @@ test('learning tabs, chord positions and progression transport work together', a
       const starts = sound.starts;
       finishResume(); await clock.tickAsync(10000);
       assert.equal(sound.starts, starts);
-      assert.match($('#play-button').textContent, /Akoru dinle/);
+      assert.match($('#play-button').textContent, /Play chord/);
     });
   } finally {
     window.dispatchEvent(new window.Event('pagehide'));

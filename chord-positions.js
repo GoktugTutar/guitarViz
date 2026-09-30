@@ -1,4 +1,4 @@
-import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=2';
+import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=3';
 
 // Every array follows TAB: high e, B, G, D, A, low E. These are explicit
 // fingerings, not arbitrary collections of chord tones found on the neck.
@@ -79,11 +79,11 @@ function getBarres(frets, fingers) {
  * mutes string 6, so no unverified bass-fret stretch is introduced.
  */
 export function getChordPositions(root, chord = 'major', tuning = 'standard', maxFret = 24) {
-  if (!Number.isInteger(root)) throw new TypeError('Kök nota bir tam sayı olmalı.');
-  if (!Object.hasOwn(CHORDS, chord)) throw new RangeError(`Bilinmeyen akor: ${chord}`);
-  if (!Object.hasOwn(TUNINGS, tuning)) throw new RangeError(`Bilinmeyen akort: ${tuning}`);
+  if (!Number.isInteger(root)) throw new TypeError('Root note must be an integer.');
+  if (!Object.hasOwn(CHORDS, chord)) throw new RangeError(`Unknown chord: ${chord}`);
+  if (!Object.hasOwn(TUNINGS, tuning)) throw new RangeError(`Unknown tuning: ${tuning}`);
   if (!Number.isInteger(maxFret) || maxFret < 0 || maxFret > 36) {
-    throw new RangeError('Perde sayısı 0–36 arasında bir tam sayı olmalı.');
+    throw new RangeError('Fret count must be an integer between 0 and 36.');
   }
   root = mod12(root);
   const physicalRoot = mod12(root + (tuning === 'halfStepDown' ? 1 : 0));
@@ -130,7 +130,7 @@ export function getChordPositions(root, chord = 'major', tuning = 'standard', ma
     positions.push({
       id: `${tuning}:${root}:${chord}:${key}`,
       name, shape: candidate.shape,
-      label: `${candidate.shape} şekli · ${isOpen ? 'Açık pozisyon' : `${firstFret}. perde`}${tuning === 'dropD' ? ' · 6. tel sessiz' : ''}`,
+      label: `${candidate.shape} shape · ${isOpen ? 'Open position' : `Fret ${firstFret}`}${tuning === 'dropD' ? ' · Mute string 6' : ''}`,
       frets, fingers, barres: getBarres(frets, fingers), notes, firstFret,
       maxFret: Math.max(...played), isOpen,
     });

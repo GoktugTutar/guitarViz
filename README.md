@@ -1,85 +1,63 @@
-# perde. — Gitar klavyesini keşfet
+# perde. — Guitar Explorer
 
-Yatay gitar klavyesinde gamları, akorları ve notaların yerlerini keşfetmek için HTML, CSS ve JavaScript ile hazırlanmış uygulama. Bilgisayar ve telefon tarayıcılarında çalışır. Kurulacak bir JavaScript paketi veya veritabanı gerektirmez.
+An interactive horizontal guitar fretboard built with HTML, CSS and JavaScript. Explore scales, chord positions, intervals, TAB and chord progressions on a phone or desktop. No runtime dependencies, database or account required.
 
-## İnternetten açma
+**Live app: https://goktugtutar.github.io/guitarViz/**
 
-Yayın adresi: **https://goktugtutar.github.io/guitarViz/**
+## Features
 
-Uygulama GitHub Pages üzerinde ücretsiz barındırılır. Telefon veya bilgisayardan bu adresi açabilirsiniz; yerel sunucu, aynı Wi-Fi ağı veya açık bir bilgisayar gerekmez.
+- **Explore:** eight scales, eight chord types and a scale/chord overlay. Switch between note names, intervals and fret numbers. Explorer settings persist in the current browser.
+- **Progressions:** eight major/minor presets, Roman numerals, chord functions and explanations of the seven diatonic triads. Play four beats per chord at 40–180 BPM, with optional looping.
+- **Chord Finder:** see every chord-tone location or browse playable positions with fret and finger numbers, muted strings and barres.
+- **Info:** a top-right guide to the controls, notation, sound and mobile fretboard navigation.
+- Standard, Drop D and half-step-down tunings; 12, 15 or 24 frets; synthesized plucked-string audio.
 
-Yayın kaynağı GitHub reposunda **Settings → Pages → Deploy from a branch → main → / (root)** olarak ayarlanır. `main` dalına yüklenen değişiklikler otomatik olarak yayımlanır; güncellemelerin görünmesi birkaç dakika sürebilir. `.nojekyll` dosyası HTML, CSS ve JavaScript dosyalarının doğrudan sunulmasını sağlar.
+The high string is at the top, as in TAB. Swipe horizontally on smaller screens. R means the root (degree 1), 0 means an open string and × means mute. Finger numbers are 1 index, 2 middle, 3 ring and 4 pinky.
 
-## Yerelde çalıştırma
+The position library currently covers common open chords and movable E/A shapes. It is **not a complete five-shape CAGED library**. Some open C/G/D shapes are included. Chord Finder mutes string 6 in Drop D to retain verified fingerings on the upper strings.
 
-Bu klasörde bir terminal açın. Node.js kuruluysa:
+## Deployment
+
+GitHub Pages serves the `main` branch from `/ (root)`. Changes to `main` publish automatically. `.nojekyll` keeps the static assets intact. Use the public address on any device; no local server or computer left running is necessary.
+
+## Local development
+
+Use a current Node.js version:
 
 ```sh
 npm start
-```
-
-Aynı sunucuyu doğrudan da başlatabilirsiniz:
-
-```sh
-node serve.mjs
-```
-
-Tarayıcıda **http://localhost:5173** adresini açın. Port kullanımdaysa:
-
-```sh
+# or
 node serve.mjs --port 5174
 ```
 
-Python 3 kuruluysa alternatif olarak:
+Open the printed localhost URL. Alternatively, run `python3 serve.py` (also supports `--port 5174`). Use only one server at a time. ES modules require HTTP; do not open `index.html` directly from disk.
 
-```sh
-python3 serve.py
-```
+To preview on a phone, connect it to the same Wi-Fi network and open the network address printed by the server. The computer must stay on for local previews. Normal use only needs the public GitHub Pages address.
 
-Python sunucusu da `--port 5174` seçeneğini destekler. İki sunucudan yalnızca birini çalıştırmanız yeterlidir. JavaScript modülleri kullanıldığı için uygulamayı `index.html` dosyasına çift tıklayarak değil, sunucunun adresinden açın.
-
-## Yerel geliştirme sürümünü telefondan açma
-
-1. Telefonu ve bilgisayarı aynı Wi-Fi ağına bağlayın.
-2. Sunucuyu bilgisayarda başlatın.
-3. Terminalde **Telefon:** satırında gösterilen adresi telefonun tarayıcısına yazın. Örnek: `http://192.168.1.20:5173`.
-4. Uygulamayı kullandığınız sürece bilgisayarı açık ve sunucuyu çalışır durumda tutun. Sunucuyu kapatmak için terminalde **Ctrl+C** kullanın.
-
-Telefondaki `localhost` adresi bilgisayara ulaşmaz; terminaldeki ağ adresini kullanın. Birden fazla adres görünüyorsa bilgisayarın Wi-Fi bağlantısının IPv4 adresini deneyin. Bağlantı kurulamazsa bilgisayarın güvenlik duvarında Node.js veya Python için yerel ağ erişimini kontrol edin. Misafir Wi-Fi ağları, VPN veya modemlerdeki cihaz yalıtımı aynı ağdaki cihazların birbirine erişmesini engelleyebilir.
-
-Bu yöntem yalnızca yerel geliştirme içindir. Normal kullanımda yukarıdaki GitHub Pages adresini açın.
-
-## Kullanım
-
-### Sekmeler
-
-- **Keşfet:** Gam, akor ve katman haritaları. Başka bir sekmeye geçip döndüğünüzde bu ekrandaki seçimleriniz korunur.
-- **Progresyonlar:** Majör/minör ton ve sekiz hazır yürüyüşten birini seçin. Roma rakamı, akor adı ve işlev açıklaması birlikte gösterilir. Akora dokunun, yatay klavyede pozisyonunu görün. Örneğin G majörde I–V–vi–IV = G–D–Em–C. Tonun yedi diyatonik akorunu ayrıca inceleyebilirsiniz.
-- **Akor Bul:** Kök nota ve akor türünü seçin. Tüm nota yerleri ile çalınabilir açık/bareli pozisyonlar arasında geçiş yapın. Pozisyonları düğmeler veya oklarla gezin; perde ve parmak numaralarını tablodan ya da **Parmaklar** görünümünden okuyun.
-
-Progresyonlar 40–180 BPM aralığında, her akor dört vuruş sürecek şekilde çalınır. **Tekrarla** döngüyü açar; durdurma, sekme/ton/tempo değişikliği veya sayfadan ayrılma çalmayı sonlandırır. Akor Bul'da **Akoru dinle** seçilen tutuşu çalar.
-
-Parmak numaraları: 1 = işaret, 2 = orta, 3 = yüzük, 4 = serçe. 0 açık tel, × susturulan teldir. Parmak numaraları bir tutuş önerisidir. Drop D pozisyonlarında altıncı tel susturulur; bu telin değiştirilmesi diğer tellerdeki akor seslerini etkilemez.
-
-### Keşfet kontrolleri
-
-- **Gam:** Bir kök nota ve gam seçerek klavyedeki ilgili notaları görün.
-- **Akor:** Kök nota ve akor türü üzerinden akor seslerini inceleyin.
-- **Katman:** Gam ve akoru birlikte göstererek ortak sesleri karşılaştırın.
-- **Görünüm:** Nota adları, aralıklar ve TAB perde numaraları arasında geçiş yapın.
-- **Akort:** Standart, Drop D veya yarım ses pes akort seçin.
-- **Perdeler:** Görünecek perde sayısını değiştirin; dar ekranda klavyeyi yatay kaydırın.
-- **Dinleme:** Klavyedeki bir notaya dokunarak sesini dinleyin. Ses ilk dokunuştan sonra etkinleşir; telefonun medya sesini açık tutun.
-
-Klavyede ince teller üstte, kalın teller altta yer alır. TAB görünümündeki sayılar perde numarasıdır; **0** açık tel anlamına gelir. Bu görünüm seçili gam veya akorun yerlerini gösterir; ritim içeren bir şarkı transkripsiyonu değildir.
-
-## Kontrol
-
-Müzik hesaplamaları ve arayüz etkileşimlerinin otomatik kontrollerini çalıştırmak için geliştirme bağımlılıklarını kurun:
+## Tests
 
 ```sh
 npm ci
 npm test
 ```
 
-Güncel bir Node.js sürümü kullanın. Testlerde jsdom ve sahte zamanlayıcı kullanılır; bunlar gerçek tarayıcı yerleşimi veya ses tınısını ölçmez. Uygulamayı çalıştırmak için bu paketler gerekmez. Geliştirme sunucusu yalnızca statik dosyaları sunar; uygulama hesaplamaları ve ses üretimi tarayıcıda yapılır.
+Tests verify music calculations, chord voicings, progression timing, controller interactions, guide links, English content, metadata and the sitemap. jsdom and fake timers are development dependencies; they do not verify actual browser layout or audible timbre.
+
+## Search and learning pages
+
+The app and three static guides have English metadata, canonical URLs and social sharing tags. The home page includes truthful WebApplication structured data. Guide content is readable without JavaScript:
+
+- `/guitarViz/guitar-scales/`
+- `/guitarViz/guitar-chords/`
+- `/guitarViz/chord-progressions/`
+
+Guide buttons open the relevant tool with `?tab=explore`, `?tab=chords` or `?tab=progressions`. All app query variants canonicalize to the home page.
+
+### Google Search Console setup
+
+1. Add a **URL-prefix property** for `https://goktugtutar.github.io/guitarViz/`.
+2. Choose HTML tag verification. Add the exact `google-site-verification` meta tag supplied by the owner's Google account to the home page `<head>`, publish, then click Verify in Search Console. No verification token is included by default.
+3. Submit `https://goktugtutar.github.io/guitarViz/sitemap.xml` under Sitemaps.
+4. Use URL Inspection to check the home page and guide URLs, then request indexing if needed.
+
+A `robots.txt` inside `/guitarViz/` would not control crawling: robots rules must live at the origin root, `https://goktugtutar.github.io/robots.txt`. Submit the sitemap through Search Console instead. Indexing and ranking are Google's decisions and may take time. Search Console reports Google Search performance, not a count of all site visitors. No visitor analytics or trackers are installed.

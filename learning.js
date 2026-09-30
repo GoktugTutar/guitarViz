@@ -1,6 +1,6 @@
-import { NOTES, CHORDS, spelledNoteName } from './music.js?v=2';
-import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=2';
-import { getChordPositions } from './chord-positions.js?v=2';
+import { NOTES, CHORDS, spelledNoteName } from './music.js?v=3';
+import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=3';
+import { getChordPositions } from './chord-positions.js?v=3';
 
 /** The learning tools share the original fretboard and audio renderer. */
 export function initLearning(bridge) {
@@ -13,22 +13,22 @@ export function initLearning(bridge) {
   let currentProgression, availablePositions = [];
 
   $('#progressions-panel').innerHTML = `
-    <div class="learning-heading"><div><span class="eyebrow">AKORLARIN ARASINDAKİ BAĞ</span><h2>Bir akordan, <em>diğerine.</em></h2><p>Bir ton seç. Yürüyüşü gör, dinle ve klavyede takip et.</p></div><span class="section-number">02 /</span></div>
-    <div class="learning-fields"><label>TON<select id="progression-root">${rootOptions}</select></label><label>DİZİ<select id="progression-mode"><option value="major">Majör</option><option value="minor">Minör</option></select></label><label class="wide-field">AKOR YÜRÜYÜŞÜ<select id="progression-select"></select></label></div>
+    <div class="learning-heading"><div><span class="eyebrow">CONNECT THE CHORDS</span><h2>From one chord <em>to the next.</em></h2><p>Choose a key. See the progression, hear it and follow along on the fretboard.</p></div><span class="section-number">02 /</span></div>
+    <div class="learning-fields"><label>KEY<select id="progression-root">${rootOptions}</select></label><label>MODE<select id="progression-mode"><option value="major">Major</option><option value="minor">Minor</option></select></label><label class="wide-field">CHORD PROGRESSION<select id="progression-select"></select></label></div>
     <p class="progression-description" id="progression-description"></p>
-    <div class="progression-steps" id="progression-steps" role="group" aria-label="Progresyon akorları"></div>
-    <div class="transport"><button id="progression-play" class="primary-button transport-play" aria-label="Progresyonu dinle">▶ Yürüyüşü dinle</button><label class="tempo-label" for="progression-tempo">Tempo <output id="tempo-value">80 BPM</output><input id="progression-tempo" type="range" min="40" max="180" step="5" value="80"></label><label class="loop-label"><input id="progression-loop" type="checkbox"> Tekrarla</label><div class="beat-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="bar-duration">Her akor · 4 vuruş</span></div>
+    <div class="progression-steps" id="progression-steps" role="group" aria-label="Progression chords"></div>
+    <div class="transport"><button id="progression-play" class="primary-button transport-play" aria-label="Play progression">▶ Play progression</button><label class="tempo-label" for="progression-tempo">Tempo <output id="tempo-value">80 BPM</output><input id="progression-tempo" type="range" min="40" max="180" step="5" value="80"></label><label class="loop-label"><input id="progression-loop" type="checkbox"> Loop</label><div class="beat-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="bar-duration">4 beats per chord</span></div>
     <div class="progression-explanation"><span class="small-card-icon">⌁</span><div><h3 id="progression-role"></h3><p id="progression-explanation"></p><p class="chord-construction" id="chord-construction"></p></div></div>
-    <details class="degree-details"><summary>Bu tonun 7 akoru nasıl oluşur?</summary><p>Gamın her notasından başlayıp bir nota atlayarak üç ses al: 1–3–5. Başlangıç notası değiştikçe akorun kökü ve türü de değişir.</p><div class="diatonic-chords" id="diatonic-chords" role="group" aria-label="Tonun diyatonik akorları"></div><p id="roman-help">Büyük Roma rakamları majör, küçük rakamlar minör; ° eksiltilmiş akoru gösterir. Minörde dereceler doğal minör gamına göre sayılır.</p></details>
-    <div class="position-mini"><span id="progression-position-label"></span><label>Pozisyon<select id="progression-position" aria-label="Seçili progresyon akorunun pozisyonu"></select></label></div>
+    <details class="degree-details"><summary>How are the 7 chords in this key built?</summary><p>Start on any scale note and take every other note to build a triad: 1–3–5. As the starting note changes, so do the chord root and quality.</p><div class="diatonic-chords" id="diatonic-chords" role="group" aria-label="Diatonic chords in this key"></div><p id="roman-help">Uppercase Roman numerals mean major, lowercase mean minor, and ° means diminished. Minor-key degrees are numbered relative to the natural minor scale.</p></details>
+    <div class="position-mini"><span id="progression-position-label"></span><label>Position<select id="progression-position" aria-label="Position of the selected progression chord"></select></label></div>
     <p id="progression-status" class="sr-only" role="status" aria-live="polite"></p>`;
 
   $('#chords-panel').innerHTML = `
-    <div class="learning-heading"><div><span class="eyebrow">KLAVYEDE AKOR ARA</span><h2>Bir akor, <em>birden çok yer.</em></h2><p>Notaları tanı. Elinin altındaki farklı pozisyonları keşfet.</p></div><span class="section-number">03 /</span></div>
-    <div class="learning-fields finder-fields"><label>KÖK NOTA<select id="finder-root">${rootOptions}</select></label><label>AKOR TÜRÜ<select id="finder-chord">${chordKeys.map(key=>`<option value="${key}">${CHORDS[key].name}</option>`).join('')}</select></label><div class="finder-summary"><strong id="finder-name"></strong><span id="finder-notes"></span></div></div>
-    <div class="finder-view-row"><div class="segmented" role="group" aria-label="Akor haritası görünümü"><button data-finder-view="positions" class="active" aria-pressed="true">Çalınabilir pozisyonlar</button><button data-finder-view="all" aria-pressed="false">Tüm nota yerleri</button></div><span id="position-count"></span></div>
-    <div id="finder-positions"><div class="position-picker" id="position-picker" role="group" aria-label="Akor pozisyonları"></div><div class="position-summary"><button class="position-arrow" id="previous-position" aria-label="Önceki akor pozisyonu">←</button><div><strong id="position-name"></strong><span id="position-description"></span></div><button class="position-arrow" id="next-position" aria-label="Sonraki akor pozisyonu">→</button></div><div id="fingering-table" class="fingering-table"></div><p class="fingering-help">0 = açık tel · × = çalma · Parmak: 1 işaret, 2 orta, 3 yüzük, 4 serçe. Aynı parmak birden fazla teldeyse bare yap.</p></div>
-    <p id="finder-all-help" class="all-notes-help" hidden>Tüm renkli noktalar bu akorun sesleridir. Bunlar tek bir tutuş değildir; çalmak için “Çalınabilir pozisyonlar” seçeneğine geç.</p>`;
+    <div class="learning-heading"><div><span class="eyebrow">FIND CHORDS ON THE FRETBOARD</span><h2>One chord, <em>many places.</em></h2><p>Get to know the notes. Explore different ways to play them.</p></div><span class="section-number">03 /</span></div>
+    <div class="learning-fields finder-fields"><label>ROOT NOTE<select id="finder-root">${rootOptions}</select></label><label>CHORD TYPE<select id="finder-chord">${chordKeys.map(key=>`<option value="${key}">${CHORDS[key].name}</option>`).join('')}</select></label><div class="finder-summary"><strong id="finder-name"></strong><span id="finder-notes"></span></div></div>
+    <div class="finder-view-row"><div class="segmented" role="group" aria-label="Chord map view"><button data-finder-view="positions" class="active" aria-pressed="true">Playable positions</button><button data-finder-view="all" aria-pressed="false">All note locations</button></div><span id="position-count"></span></div>
+    <div id="finder-positions"><div class="position-picker" id="position-picker" role="group" aria-label="Chord positions"></div><div class="position-summary"><button class="position-arrow" id="previous-position" aria-label="Previous chord position">←</button><div><strong id="position-name"></strong><span id="position-description"></span></div><button class="position-arrow" id="next-position" aria-label="Next chord position">→</button></div><div id="fingering-table" class="fingering-table"></div><p class="fingering-help">0 = open string · × = mute · Fingers: 1 index, 2 middle, 3 ring, 4 pinky. A finger spanning multiple strings forms a barre.</p></div>
+    <p id="finder-all-help" class="all-notes-help" hidden>Every colored dot is a chord tone. These dots are possible note locations, not a single fingering. Choose “Playable positions” to find a shape to play.</p>`;
 
   $$('.page-tabs [data-page]').forEach(button => {
     button.addEventListener('click',()=>setPage(button.dataset.page));
@@ -55,7 +55,7 @@ export function initLearning(bridge) {
   window.addEventListener('pagehide',stop);
 
   function setPage(page) {
-    if(state.page===page)return;
+    if(!['explore','progressions','chords'].includes(page)||state.page===page)return;
     stop(); state.page=page;state.position=0;
     $$('.page-tabs [data-page]').forEach(button=>{const active=button.dataset.page===page;button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;});
     $('#progressions-panel').hidden=page!=='progressions';$('#chords-panel').hidden=page!=='chords';
@@ -71,12 +71,12 @@ export function initLearning(bridge) {
     $('#progression-steps').replaceChildren(...currentProgression.steps.map((step,index)=>{
       const button=document.createElement('button');button.className='progression-step';button.dataset.step=index;
       button.innerHTML=`<span class="step-roman">${step.roman}</span><strong>${step.symbol}</strong><span class="step-role">${step.role}</span><span class="step-index">0${index+1}</span>`;
-      button.setAttribute('aria-label',`${index+1}. akor: ${step.symbol}, ${step.roman}, ${step.role}`);
+      button.setAttribute('aria-label',`Chord ${index+1}: ${step.symbol}, ${step.roman}, ${step.role}`);
       button.addEventListener('click',()=>{stop();state.step=index;state.customStep=null;state.position=0;showProgressionChord();});return button;
     }));
     $('#diatonic-chords').replaceChildren(...getDiatonicChords(state.root,state.mode).map(step=>{
       const button=document.createElement('button');button.innerHTML=`<span>${step.roman}</span><strong>${step.symbol}</strong>`;
-      button.setAttribute('aria-label',`${step.roman}: ${step.symbol} akorunu göster`);
+      button.setAttribute('aria-label',`Show ${step.symbol}, degree ${step.roman}`);
       button.addEventListener('click',()=>{stop();state.customStep=step;state.position=0;showProgressionChord();});return button;
     }));
     showProgressionChord();
@@ -90,12 +90,12 @@ export function initLearning(bridge) {
     $('#progression-explanation').textContent=step.explanation;
     const rootName=step.symbol.match(/^[A-G][♯♭]*/)[0];
     const notes=CHORDS[step.chord].intervals.map(interval=>spelledNoteName(step.root,interval,step.chord,'chord',rootName));
-    $('#chord-construction').textContent=`${step.symbol} = ${notes.join(' + ')} · ${currentProgression.keyName} tonunda ${step.degree}. derece`;
+    $('#chord-construction').textContent=`${step.symbol} = ${notes.join(' + ')} · Degree ${step.degree} in ${currentProgression.keyName}`;
     $('#progression-position').replaceChildren(...availablePositions.map((p,i)=>{const option=document.createElement('option');option.value=i;option.textContent=p.label || p.name;return option;}));
     $('#progression-position').value=state.position;$('#progression-position').disabled=!position;
-    $('#progression-position-label').textContent=position?`${position.isOpen?'Açık teller içeren pozisyon':'Kapalı pozisyon'} · ${position.firstFret}–${position.maxFret}. perdeler`:'Bu akortta doğrulanmış pozisyon bulunamadı.';
+    $('#progression-position-label').textContent=position?`${position.isOpen?'Position with open strings':'Closed position'} · Frets ${position.firstFret}–${position.maxFret}`:'No verified position is available in this tuning.';
     $('#progression-status').textContent=`${step.symbol}: ${step.role}`;
-    bridge.showChord({root:step.root,chord:step.chord,symbol:step.symbol,position,eyebrow:`${currentProgression.keyName.toLocaleUpperCase('tr')} · ${step.roman}`,description:`${step.role} · ${position?(position.label || position.name):'Tüm akor sesleri'}`});
+    bridge.showChord({root:step.root,chord:step.chord,symbol:step.symbol,position,eyebrow:`${currentProgression.keyName.toUpperCase()} · ${step.roman}`,description:`${step.role} · ${position?(position.label || position.name):'All chord tones'}`});
   }
   function changeFinder(change,reset=true){stop();Object.assign(state,change);if(reset)state.position=0;renderFinder();}
   function choosePosition(index){if(!availablePositions.length)return;stop();state.position=index;renderFinder();}
@@ -107,17 +107,17 @@ export function initLearning(bridge) {
     $('#finder-notes').textContent=CHORDS[state.chord].intervals.map(interval=>spelledNoteName(state.finderRoot,interval,state.chord,'chord')).join(' · ');
     $$('[data-finder-view]').forEach(button=>{const active=button.dataset.finderView===state.view;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
     $('#finder-positions').hidden=state.view!=='positions';$('#finder-all-help').hidden=state.view!=='all';
-    $('#position-count').textContent=`${availablePositions.length} pozisyon`;
+    $('#position-count').textContent=`${availablePositions.length} positions`;
     $('#position-picker').replaceChildren(...availablePositions.map((p,index)=>{const button=document.createElement('button');button.textContent=p.label || p.name;button.classList.toggle('active',index===state.position);button.setAttribute('aria-pressed',String(index===state.position));button.addEventListener('click',()=>choosePosition(index));return button;}));
-    $('#position-name').textContent=position?(position.label || position.name):'Pozisyon bulunamadı';
-    $('#position-description').textContent=position?`${state.position+1} / ${availablePositions.length} · ${position.firstFret}–${position.maxFret}. perdeler${position.barres.length?' · Bareli tutuş':''}`:'Bu akort için tüm nota yerlerini inceleyebilirsin.';
+    $('#position-name').textContent=position?(position.label || position.name):'No position found';
+    $('#position-description').textContent=position?`${state.position+1} / ${availablePositions.length} · Frets ${position.firstFret}–${position.maxFret}${position.barres.length?' · Barre shape':''}`:'Explore all note locations in this tuning instead.';
     $('#previous-position').disabled=availablePositions.length<2;$('#next-position').disabled=availablePositions.length<2;
-    const table=document.createElement('table');table.innerHTML='<caption>İnce telden kalın tele perde ve parmak numaraları</caption><thead><tr><th scope="col">Tel</th>'+[1,2,3,4,5,6].map(i=>`<th scope="col">${i}</th>`).join('')+'</tr></thead><tbody><tr><th scope="row">Perde</th>'+(position?position.frets.map(f=>`<td>${f===null?'×':f}</td>`).join(''):'<td colspan="6">—</td>')+'</tr><tr><th scope="row">Parmak</th>'+(position?position.frets.map((f,i)=>`<td>${f===null?'×':f===0?'0':position.fingers?.[i]??'—'}</td>`).join(''):'<td colspan="6">—</td>')+'</tr></tbody>';
+    const table=document.createElement('table');table.innerHTML='<caption>Fret and finger numbers, from high to low string</caption><thead><tr><th scope="col">String</th>'+[1,2,3,4,5,6].map(i=>`<th scope="col">${i}</th>`).join('')+'</tr></thead><tbody><tr><th scope="row">Frets</th>'+(position?position.frets.map(f=>`<td>${f===null?'×':f}</td>`).join(''):'<td colspan="6">—</td>')+'</tr><tr><th scope="row">Finger</th>'+(position?position.frets.map((f,i)=>`<td>${f===null?'×':f===0?'0':position.fingers?.[i]??'—'}</td>`).join(''):'<td colspan="6">—</td>')+'</tr></tbody>';
     $('#fingering-table').replaceChildren(table);
-    bridge.showChord({root:state.finderRoot,chord:state.chord,symbol,position:state.view==='positions'?position:null,eyebrow:'AKOR BUL',description:state.view==='positions'?(position?(position.label || position.name):'Tüm akor sesleri'):'Akorun tüm sesleri · Her renkli nokta bir seçenek'});
+    bridge.showChord({root:state.finderRoot,chord:state.chord,symbol,position:state.view==='positions'?position:null,eyebrow:'CHORD FINDER',description:state.view==='positions'?(position?(position.label || position.name):'All chord tones'):'All chord tones · Each colored dot is an option'});
   }
   function updateTransport(){
-    $('#progression-play').textContent=playing?'■ Durdur':'▶ Yürüyüşü dinle';$('#progression-play').setAttribute('aria-label',playing?'Progresyonu durdur':'Progresyonu dinle');
+    $('#progression-play').textContent=playing?'■ Stop':'▶ Play progression';$('#progression-play').setAttribute('aria-label',playing?'Stop progression':'Play progression');
     $$('.beat-meter i').forEach((dot,i)=>dot.classList.toggle('active',playing&&i===currentBeat));
     $$('#progression-steps button').forEach((button,index)=>button.classList.toggle('is-playing',playing&&!state.customStep&&index===state.step));
   }
@@ -140,5 +140,5 @@ export function initLearning(bridge) {
     };
     tick();
   }
-  return {stop,getPage:()=>state.page,refresh(){stop();state.position=0;if(state.page==='progressions')renderProgression();else if(state.page==='chords')renderFinder();}};
+  return {stop,setPage,getPage:()=>state.page,refresh(){stop();state.position=0;if(state.page==='progressions')renderProgression();else if(state.page==='chords')renderFinder();}};
 }

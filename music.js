@@ -4,53 +4,53 @@ const FLAT_NOTES = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A'
 const INTERVALS = ['R', '♭2', '2', '♭3', '3', '4', '♯4', '5', '♭6', '6', '♭7', '7'];
 
 export const TUNINGS = Object.freeze({
-  standard: { name: 'Standart', notes: [64, 59, 55, 50, 45, 40] },
+  standard: { name: 'Standard', notes: [64, 59, 55, 50, 45, 40] },
   dropD: { name: 'Drop D', notes: [64, 59, 55, 50, 45, 38] },
-  halfStepDown: { name: 'Yarım ses pes', notes: [63, 58, 54, 49, 44, 39] },
+  halfStepDown: { name: 'Half step down', notes: [63, 58, 54, 49, 44, 39] },
 });
 
 export const SCALES = Object.freeze({
   major: {
-    name: 'Majör', intervals: [0, 2, 4, 5, 7, 9, 11], formula: '1 · 2 · 3 · 4 · 5 · 6 · 7',
-    description: 'Aydınlık ve dengeli. Melodi, armoni ve diğer diziler için temel bir başlangıç.',
+    name: 'Major', intervals: [0, 2, 4, 5, 7, 9, 11], formula: '1 · 2 · 3 · 4 · 5 · 6 · 7',
+    description: 'Bright and balanced. A foundation for melody, harmony and other scales.',
   },
   minor: {
-    name: 'Doğal minör', intervals: [0, 2, 3, 5, 7, 8, 10], formula: '1 · 2 · ♭3 · 4 · 5 · ♭6 · ♭7',
-    description: 'Daha koyu ve duygulu bir renk. Minör melodilerin temel dizisi.',
+    name: 'Natural minor', intervals: [0, 2, 3, 5, 7, 8, 10], formula: '1 · 2 · ♭3 · 4 · 5 · ♭6 · ♭7',
+    description: 'A darker, expressive color. A foundation for minor melodies.',
   },
   majorPentatonic: {
-    name: 'Majör pentatonik', intervals: [0, 2, 4, 7, 9], formula: '1 · 2 · 3 · 5 · 6',
-    description: 'Beş notayla açık, akıcı melodiler. Pop, country ve doğaçlama için kullanışlı.',
+    name: 'Major pentatonic', intervals: [0, 2, 4, 7, 9], formula: '1 · 2 · 3 · 5 · 6',
+    description: 'Five notes for open, flowing melodies. Useful for pop, country and improvisation.',
   },
   minorPentatonic: {
-    name: 'Minör pentatonik', intervals: [0, 3, 5, 7, 10], formula: '1 · ♭3 · 4 · 5 · ♭7',
-    description: 'Blues ve rock sololarının beş notalı temeli. Klavyeyi keşfetmek için iyi bir başlangıç.',
+    name: 'Minor pentatonic', intervals: [0, 3, 5, 7, 10], formula: '1 · ♭3 · 4 · 5 · ♭7',
+    description: 'The five-note foundation of many blues and rock solos. A useful starting point for exploring the fretboard.',
   },
   blues: {
     name: 'Blues', intervals: [0, 3, 5, 6, 7, 10], formula: '1 · ♭3 · 4 · ♭5 · 5 · ♭7',
-    description: 'Minör pentatoniğe eklenen blues notası, melodilere gerilim ve karakter katar.',
+    description: 'An added blue note gives the minor pentatonic scale extra tension and character.',
   },
   dorian: {
-    name: 'Doryen', intervals: [0, 2, 3, 5, 7, 9, 10], formula: '1 · 2 · ♭3 · 4 · 5 · 6 · ♭7',
-    description: 'Minör karakteri doğal altılıyla aydınlatır. Funk, caz ve modal doğaçlamada sık duyulur.',
+    name: 'Dorian', intervals: [0, 2, 3, 5, 7, 9, 10], formula: '1 · 2 · ♭3 · 4 · 5 · 6 · ♭7',
+    description: 'A minor sound brightened by a natural sixth. Often heard in funk, jazz and modal improvisation.',
   },
   mixolydian: {
-    name: 'Miksolidyen', intervals: [0, 2, 4, 5, 7, 9, 10], formula: '1 · 2 · 3 · 4 · 5 · 6 · ♭7',
-    description: 'Majör karakter ve küçük yedili. Dominant yedili akorlarla güçlü bir eşleşme.',
+    name: 'Mixolydian', intervals: [0, 2, 4, 5, 7, 9, 10], formula: '1 · 2 · 3 · 4 · 5 · 6 · ♭7',
+    description: 'A major sound with a minor seventh. A natural match for dominant seventh chords.',
   },
   harmonicMinor: {
-    name: 'Armonik minör', intervals: [0, 2, 3, 5, 7, 8, 11], formula: '1 · 2 · ♭3 · 4 · 5 · ♭6 · 7',
-    description: 'Doğal minörün yükseltilmiş yedilisi, kök sese güçlü bir çözülme hissi verir.',
+    name: 'Harmonic minor', intervals: [0, 2, 3, 5, 7, 8, 11], formula: '1 · 2 · ♭3 · 4 · 5 · ♭6 · 7',
+    description: 'A raised seventh adds a strong pull toward the root of the minor scale.',
   },
 });
 
 export const CHORDS = Object.freeze({
-  major: { name: 'Majör', intervals: [0, 4, 7], symbol: '' },
-  minor: { name: 'Minör', intervals: [0, 3, 7], symbol: 'm' },
+  major: { name: 'Major', intervals: [0, 4, 7], symbol: '' },
+  minor: { name: 'Minor', intervals: [0, 3, 7], symbol: 'm' },
   '7': { name: 'Dominant 7', intervals: [0, 4, 7, 10], symbol: '7' },
-  maj7: { name: 'Majör 7', intervals: [0, 4, 7, 11], symbol: 'maj7' },
-  m7: { name: 'Minör 7', intervals: [0, 3, 7, 10], symbol: 'm7' },
-  dim: { name: 'Eksiltilmiş', intervals: [0, 3, 6], symbol: 'dim' },
+  maj7: { name: 'Major 7', intervals: [0, 4, 7, 11], symbol: 'maj7' },
+  m7: { name: 'Minor 7', intervals: [0, 3, 7, 10], symbol: 'm7' },
+  dim: { name: 'Diminished', intervals: [0, 3, 6], symbol: 'dim' },
   sus2: { name: 'Sus 2', intervals: [0, 2, 7], symbol: 'sus2' },
   sus4: { name: 'Sus 4', intervals: [0, 5, 7], symbol: 'sus4' },
 });
@@ -93,7 +93,7 @@ export function intervalLabel(semitones) {
 export function degreeLabel(semitones, definitionKey = 'major', kind = 'scale') {
   const collection = kind === 'chord' ? CHORDS : SCALES;
   const degrees = kind === 'chord' ? CHORD_DEGREES : SCALE_DEGREES;
-  const definition = getDefinition(collection, definitionKey, kind === 'chord' ? 'akor' : 'dizi');
+  const definition = getDefinition(collection, definitionKey, kind === 'chord' ? 'chord' : 'scale');
   const degreeIndex = definition.intervals.indexOf(mod12(semitones));
   return degreeIndex === -1 ? intervalLabel(semitones) : degrees[definitionKey][degreeIndex];
 }
@@ -113,17 +113,17 @@ export function spelledNoteName(root, interval, definitionKey = 'major', kind = 
 function tuningNotes(tuning = 'standard') {
   const notes = Array.isArray(tuning) ? tuning : typeof tuning === 'object' ? tuning?.notes : TUNINGS[tuning]?.notes;
   if (!notes || notes.length !== 6 || !notes.every(Number.isInteger)) {
-    throw new RangeError('Akort, altı tel için MIDI notaları içermeli.');
+    throw new RangeError('Tuning must contain MIDI notes for six strings.');
   }
   return notes;
 }
 
 function assertRoot(root) {
-  if (!Number.isInteger(root)) throw new TypeError('Kök nota bir tam sayı olmalı.');
+  if (!Number.isInteger(root)) throw new TypeError('Root note must be an integer.');
 }
 
 function getDefinition(collection, key, label) {
-  if (!Object.hasOwn(collection, key)) throw new RangeError(`Bilinmeyen ${label}: ${key}`);
+  if (!Object.hasOwn(collection, key)) throw new RangeError(`Unknown ${label}: ${key}`);
   return collection[key];
 }
 
@@ -132,11 +132,11 @@ export function buildFretboard({
 } = {}) {
   assertRoot(root);
   if (!Number.isInteger(fretCount) || fretCount < 0 || fretCount > 36) {
-    throw new RangeError('Perde sayısı 0–36 arasında bir tam sayı olmalı.');
+    throw new RangeError('Fret count must be an integer between 0 and 36.');
   }
-  if (!['scale', 'chord', 'layer'].includes(mode)) throw new RangeError(`Bilinmeyen mod: ${mode}`);
-  const scaleIntervals = getDefinition(SCALES, scale, 'dizi').intervals;
-  const chordIntervals = getDefinition(CHORDS, chord, 'akor').intervals;
+  if (!['scale', 'chord', 'layer'].includes(mode)) throw new RangeError(`Unknown mode: ${mode}`);
+  const scaleIntervals = getDefinition(SCALES, scale, 'scale').intervals;
+  const chordIntervals = getDefinition(CHORDS, chord, 'chord').intervals;
   return tuningNotes(tuning).flatMap((openMidi, stringIndex) =>
     Array.from({ length: fretCount + 1 }, (_, fret) => {
       const midi = openMidi + fret;
@@ -191,7 +191,7 @@ export const MOVABLE_SHAPES = Object.freeze({
 export function getChordVoicing(root, chord = 'major', shape = 'auto', tuning = 'standard') {
   assertRoot(root);
   root = mod12(root);
-  const definition = getDefinition(CHORDS, chord, 'akor');
+  const definition = getDefinition(CHORDS, chord, 'chord');
   const open = OPEN_VOICINGS[`${root}:${chord}`];
   let selectedShape;
   let originalFrets;
@@ -206,7 +206,7 @@ export function getChordVoicing(root, chord = 'major', shape = 'auto', tuning = 
     isOpen = true;
   } else {
     selectedShape = shape === 'auto' ? (mod12(root - 4) <= mod12(root - 9) ? 'E' : 'A') : shape;
-    if (!Object.hasOwn(MOVABLE_SHAPES, selectedShape)) throw new RangeError(`Bilinmeyen akor şekli: ${shape}`);
+    if (!Object.hasOwn(MOVABLE_SHAPES, selectedShape)) throw new RangeError(`Unknown chord shape: ${shape}`);
     baseFret = mod12(root - (selectedShape === 'E' ? 4 : 9));
     originalFrets = MOVABLE_SHAPES[selectedShape][chord].map(fret => fret === null ? null : fret + baseFret);
     isOpen = baseFret === 0;

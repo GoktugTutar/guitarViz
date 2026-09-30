@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = await realpath(path.dirname(fileURLToPath(import.meta.url)));
 const args = process.argv.slice(2);
-const usage = 'Kullanım: node serve.mjs [--port 5173]';
+const usage = 'Usage: node serve.mjs [--port 5173]';
 if (args.length === 1 && ['--help', '-h'].includes(args[0])) {
   console.log(usage);
   process.exit(0);
@@ -17,11 +17,12 @@ if (args.length && (args.length !== 2 || args[0] !== '--port')) {
 }
 const port = args.length ? Number(args[1]) : 5173;
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
-  console.error('Port 1 ile 65535 arasında bir tam sayı olmalıdır.');
+  console.error('Port must be an integer between 1 and 65535.');
   process.exit(1);
 }
 
 const mimeTypes = {
+  '.xml': 'application/xml; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -52,7 +53,7 @@ const server = http.createServer(async (request, response) => {
   const headOnly = request.method === 'HEAD';
   if (request.method !== 'GET' && !headOnly) {
     response.setHeader('Allow', 'GET, HEAD');
-    respond(response, 405, 'Yalnızca GET ve HEAD istekleri desteklenir.');
+    respond(response, 405, 'Only GET and HEAD requests are supported.');
     return;
   }
 
@@ -61,13 +62,13 @@ const server = http.createServer(async (request, response) => {
     pathname = decodeURIComponent((request.url || '/').split(/[?#]/, 1)[0]);
     if (!pathname.startsWith('/') || pathname.includes('\0')) throw new Error('Invalid path');
   } catch {
-    respond(response, 400, 'Geçersiz adres.', headOnly);
+    respond(response, 400, 'Invalid URL.', headOnly);
     return;
   }
 
   let file = path.resolve(root, `.${pathname}`);
   if (!withinRoot(file)) {
-    respond(response, 403, 'Bu dosyaya erişilemiyor.', headOnly);
+    respond(response, 403, 'Access to this file is denied.', headOnly);
     return;
   }
 
@@ -75,11 +76,11 @@ const server = http.createServer(async (request, response) => {
     if ((await stat(file)).isDirectory()) file = path.join(file, 'index.html');
     file = await realpath(file);
     if (!withinRoot(file)) {
-      respond(response, 403, 'Bu dosyaya erişilemiyor.', headOnly);
+      respond(response, 403, 'Access to this file is denied.', headOnly);
       return;
     }
     if (!(await stat(file)).isFile()) {
-      respond(response, 404, 'Dosya bulunamadı.', headOnly);
+      respond(response, 404, 'File not found.', headOnly);
       return;
     }
     const body = await readFile(file);
@@ -92,25 +93,25 @@ const server = http.createServer(async (request, response) => {
     response.end(headOnly ? undefined : body);
   } catch (error) {
     const status = ['ENOENT', 'ENOTDIR'].includes(error.code) ? 404 : 500;
-    respond(response, status, status === 404 ? 'Dosya bulunamadı.' : 'Dosya okunamadı.', headOnly);
+    respond(response, status, status === 404 ? 'File not found.' : 'Could not read the file.', headOnly);
   }
 });
 
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
-    console.error(`${port} portu kullanılıyor. Başka bir port deneyin: node serve.mjs --port 5174`);
+    console.error(`Port ${port} is already in use. Try another port: node serve.mjs --port 5174`);
   } else {
-    console.error(`Sunucu başlatılamadı: ${error.message}`);
+    console.error(`Could not start the server: ${error.message}`);
   }
   process.exitCode = 1;
 });
 
 server.listen(port, '0.0.0.0', () => {
-  console.log(`\nGitar uygulaması hazır.\nBilgisayar: http://localhost:${port}`);
+  console.log(`\nGuitar app ready.\nDesktop: http://localhost:${port}`);
   const addresses = new Set(Object.values(networkInterfaces()).flat().filter((entry) => entry && entry.family === 'IPv4' && !entry.internal).map((entry) => entry.address));
-  for (const address of addresses) console.log(`Telefon:    http://${address}:${port}`);
-  if (!addresses.size) console.log('Telefon için bilgisayarınızın Wi-Fi IPv4 adresini kullanın.');
-  console.log('\nTelefonu aynı Wi-Fi ağına bağlayın. Durdurmak için Ctrl+C.\n');
+  for (const address of addresses) console.log(`Phone:    http://${address}:${port}`);
+  if (!addresses.size) console.log('Use this computer’s Wi-Fi IPv4 address on your phone.');
+  console.log('\nConnect your phone to the same Wi-Fi network. Press Ctrl+C to stop.\n');
 });
 
 for (const signal of ['SIGINT', 'SIGTERM']) {

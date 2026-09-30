@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gitar uygulamasını yerel ağda sunan, bağımlılıksız geliştirme sunucusu."""
+"""Dependency-free development server for the guitar app on a local network."""
 
 import argparse
 from functools import partial
@@ -13,9 +13,9 @@ def parse_port(value):
     try:
         port = int(value)
     except ValueError:
-        raise argparse.ArgumentTypeError("Port bir sayı olmalıdır.")
+        raise argparse.ArgumentTypeError("Port must be a number.")
     if not 1 <= port <= 65535:
-        raise argparse.ArgumentTypeError("Port 1 ile 65535 arasında olmalıdır.")
+        raise argparse.ArgumentTypeError("Port must be between 1 and 65535.")
     return port
 
 
@@ -35,29 +35,29 @@ def local_addresses():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Gitar uygulamasını bilgisayarda ve aynı Wi-Fi ağındaki telefonda açın.")
-    parser.add_argument("--port", type=parse_port, default=5173, help="Sunucu portu (varsayılan: 5173)")
+    parser = argparse.ArgumentParser(description="Open the guitar app on this computer and phones on the same Wi-Fi network.")
+    parser.add_argument("--port", type=parse_port, default=5173, help="Server port (default: 5173)")
     options = parser.parse_args()
     root = Path(__file__).resolve().parent
     handler = partial(SimpleHTTPRequestHandler, directory=str(root))
     try:
         server = ThreadingHTTPServer(("0.0.0.0", options.port), handler)
     except OSError as error:
-        print(f"Sunucu başlatılamadı: {error}\nBaşka bir port deneyin: python3 serve.py --port 5174", file=sys.stderr)
+        print(f"Could not start the server: {error}\nTry another port: python3 serve.py --port 5174", file=sys.stderr)
         return 1
 
     with server:
-        print(f"\nGitar uygulaması hazır.\nBilgisayar: http://localhost:{options.port}", flush=True)
+        print(f"\nGuitar app ready.\nDesktop: http://localhost:{options.port}", flush=True)
         addresses = local_addresses()
         for address in addresses:
-            print(f"Telefon:    http://{address}:{options.port}", flush=True)
+            print(f"Phone:    http://{address}:{options.port}", flush=True)
         if not addresses:
-            print("Telefon için bilgisayarınızın Wi-Fi IPv4 adresini kullanın.", flush=True)
-        print("\nTelefonu aynı Wi-Fi ağına bağlayın. Durdurmak için Ctrl+C.\n", flush=True)
+            print("Use this computer’s Wi-Fi IPv4 address on your phone.", flush=True)
+        print("\nConnect your phone to the same Wi-Fi network. Press Ctrl+C to stop.\n", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:
-            print("\nSunucu durduruldu.")
+            print("\nServer stopped.")
     return 0
 
 
