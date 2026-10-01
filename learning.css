@@ -5,20 +5,21 @@
 .progression-tab-card{margin:24px 0;padding:22px 0;border-top:1px solid #30442e;border-bottom:1px solid #30442e}
 .progression-tab-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.progression-tab-heading h3{font:400 25px Georgia,serif;margin:9px 0 0}.progression-tab-heading>span{font-size:11px;color:var(--muted)}
 .progression-tab-scroll{overflow-x:auto;border:1px solid #42563b;border-radius:11px;background:#132018;overscroll-behavior-x:contain}
-#progression-tab{width:100%;min-width:680px;border-collapse:collapse;table-layout:fixed}
+#progression-tab{width:100%;min-width:1040px;border-collapse:collapse;table-layout:fixed}
 #progression-tab th,#progression-tab td{padding:0;text-align:center;border-right:1px solid #273c2a;transition:background .12s}
-#progression-tab .progression-tab-string{position:sticky;left:0;width:46px;background:#1d2e21;z-index:2;color:#afc1a1;font:13px monospace;border-right:1px solid #536546}
-#progression-tab thead .progression-tab-string{font:9px 'DM Sans',sans-serif}
-.progression-tab-chord{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;width:100%;min-height:90px;padding:12px 6px;border:0;background:transparent;color:var(--text)}.progression-tab-chord>span{font-size:9px;color:#97ad87;letter-spacing:.8px}.progression-tab-chord>strong{font:600 24px 'Manrope',sans-serif;color:var(--cyan)}.progression-tab-chord>small{font-size:10px;font-weight:400;color:#afc5a5;overflow-wrap:anywhere}.progression-tab-chord:hover{background:#28493166}
-#progression-tab thead td{height:29px;border-top:1px solid #304a30;border-bottom:1px solid #42563b;font:10px monospace;color:#92a983}
-#progression-tab tbody td{height:48px;background-image:linear-gradient(to bottom,transparent 20px,#42583c 20px,#42583c 21px,transparent 21px);font:14px monospace;color:#9cac90}
-#progression-tab .progression-tab-onset{border-left:1px solid #648656}.progression-tab-onset b{display:table;position:relative;background:#203a28;min-width:25px;border-radius:4px;padding:3px 5px;margin:0 auto 1px;color:var(--text);font:14px monospace}.progression-tab-onset small{display:block;font-size:9px;color:var(--cyan);line-height:1.2}
-#progression-tab td.progression-tab-sustain{padding-bottom:9px;color:#748967}
+#progression-tab .progression-tab-string{position:sticky;left:0;width:46px;background:#1d2e21;z-index:2;color:#e2ecdc;font:700 17px monospace;border-right:1px solid #536546}
+#progression-tab thead .progression-tab-string{font:600 11px 'DM Sans',sans-serif}
+.progression-tab-chord{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;min-height:116px;padding:16px 12px;border:0;background:transparent;color:var(--text)}.progression-tab-chord>span{font-size:12px;font-weight:600;color:#c6d6bd;letter-spacing:.6px}.progression-tab-chord>strong{font:700 30px 'Manrope',sans-serif;color:#b4f1d5;line-height:1.2}.progression-tab-chord>small{font-size:15px;font-weight:600;color:#e2ecdc;line-height:1.5;overflow-wrap:anywhere}.progression-tab-chord:hover{background:#28493166}
+#progression-tab thead td{height:38px;border-top:1px solid #304a30;border-bottom:1px solid #42563b;font:600 14px monospace;color:#d3e1c9}
+#progression-tab thead th[data-tab-bar],#progression-tab [data-tab-beat="0"]{border-left:2px solid #648656}
+#progression-tab tbody td{height:72px;background-image:linear-gradient(to bottom,transparent 27px,#42583c 27px,#42583c 28px,transparent 28px);font:18px monospace;color:#bacbb0}
+.progression-tab-onset b{display:table;position:relative;background:#102017;min-width:36px;border:1px solid #5c7b62;border-radius:6px;padding:3px 6px;margin:0 auto 5px;color:#f4faef;font:700 22px/1.2 monospace;font-variant-numeric:tabular-nums}.progression-tab-onset small{display:table;margin:0 auto;padding:1px 4px;border-radius:3px;background:#132018;font:600 14px/1.25 'DM Sans',sans-serif;color:#b4f1d5;white-space:nowrap}
+#progression-tab td.progression-tab-sustain{padding-bottom:23px;color:#a4b598}
 #progression-tab [data-tab-bar].is-selected{background-color:#24442c55}
 #progression-tab [data-tab-bar].is-playing{background-color:#77632926}
 #progression-tab [data-tab-bar].is-current-beat{background-color:#b19a4240;color:var(--yellow)}
 #progression-tab thead th.is-playing{box-shadow:inset 0 3px var(--yellow)}
-.progression-tab-help{font-size:11px;line-height:1.8;color:#9bb190;margin:13px 0 19px}
-.progression-tab-positions{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.progression-tab-position{display:flex;flex-direction:column;gap:8px;min-width:0}.progression-tab-position>span{font-size:9px;letter-spacing:1px;color:var(--cyan)}.progression-tab-position select{width:100%;min-width:0;background:#18281d;color:#c7d8bd;border:1px solid #445c3a;border-radius:7px;padding:10px 8px;font:10px 'DM Sans',sans-serif;min-height:38px}
-@media(max-width:600px){.progression-tab-card{margin:18px 0;padding:18px 0}.progression-tab-heading{align-items:flex-start;flex-direction:column;gap:10px}.progression-tab-heading h3{font-size:23px}.progression-tab-heading>span{font-size:10px}.progression-tab-positions{grid-template-columns:1fr 1fr;gap:14px 10px}.progression-tab-position select{font-size:10px}.progression-tab-help{font-size:10px}}
+.progression-tab-help{font-size:12px;line-height:1.8;color:#b9ccb0;margin:13px 0 19px}
+.progression-tab-positions{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.progression-tab-position{display:flex;flex-direction:column;gap:8px;min-width:0}.progression-tab-position>span{font-size:11px;letter-spacing:1px;color:var(--cyan)}.progression-tab-position select{width:100%;min-width:0;background:#18281d;color:#e2ecdc;border:1px solid #587249;border-radius:7px;padding:10px 8px;font:12px 'DM Sans',sans-serif;min-height:44px}
+@media(max-width:600px){.progression-tab-card{margin:18px 0;padding:18px 0}.progression-tab-heading{align-items:flex-start;flex-direction:column;gap:10px}.progression-tab-heading h3{font-size:23px}.progression-tab-heading>span{font-size:12px}.progression-tab-positions{grid-template-columns:1fr;gap:14px}}
 @media(prefers-reduced-motion:reduce){#progression-tab th,#progression-tab td{transition:none}}
