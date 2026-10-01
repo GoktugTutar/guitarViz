@@ -18,11 +18,11 @@
   <meta name="twitter:description" content="Explore guitar scales, chords and progressions. Find notes, intervals and playable positions on a free horizontal fretboard with TAB and audio.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="learning.css?v=4">
-  <link rel="stylesheet" href="site.css?v=4">
-  <link rel="stylesheet" href="tab-editor.css?v=4">
+  <link rel="stylesheet" href="learning.css?v=5">
+  <link rel="stylesheet" href="site.css?v=5">
+  <link rel="stylesheet" href="tab-editor.css?v=5">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"perde. Guitar Explorer","url":"https://goktugtutar.github.io/guitarViz/","description":"An interactive guitar fretboard for scales, chord positions, intervals, TAB and chord progressions.","applicationCategory":"EducationalApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and a modern web browser.","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-  <script type="module" src="app.js?v=4"></script>
+  <script type="module" src="app.js?v=5"></script>
 </head>
 <body>
   <header class="site-header">
@@ -48,7 +48,7 @@
         <div class="segmented mode-control" role="group" aria-label="Explorer mode"><button data-mode="scale" class="active" aria-pressed="true">Scale</button><button data-mode="chord" aria-pressed="false">Chord</button><button data-mode="layer" aria-pressed="false">Layer</button></div>
         <section class="control-section"><div class="field-heading"><h3>ROOT NOTE</h3><span id="root-solfege">G</span></div><div class="root-grid" id="root-options" role="group" aria-label="Select root note"></div></section>
         <section class="control-section" id="scale-section"><div class="field-heading"><h3><span class="tiny-dot cyan"></span> <span id="scale-label">SCALE TYPE</span></h3><span>8 scales</span></div><div class="choice-grid" id="scale-options" role="group" aria-label="Scale type"></div></section>
-        <section class="control-section" id="chord-section" hidden><div class="field-heading"><h3><span class="tiny-dot pink"></span> CHORD TYPE</h3><span>8 chords</span></div><div class="choice-grid" id="chord-options" role="group" aria-label="Chord type"></div><label class="select-label" for="shape-select">Chord position</label><div class="select-wrap"><select id="shape-select"><option value="all">Entire fretboard</option><option value="auto">Suggested shape</option><option value="E">E shape</option><option value="A">A shape</option></select></div></section>
+        <section class="control-section" id="chord-section" hidden><div class="field-heading"><h3><span class="tiny-dot pink"></span> CHORD TYPE</h3><span>8 chords</span></div><div class="choice-grid" id="chord-options" role="group" aria-label="Chord type"></div><label class="select-label" for="shape-select">Chord position</label><div class="select-wrap"><select id="shape-select"><option value="all">Entire fretboard</option><option value="auto">Suggested shape</option><option value="C">C shape</option><option value="A">A shape</option><option value="G">G shape</option><option value="E">E shape</option><option value="D">D shape</option></select></div></section>
         <section class="control-section target-section"><div class="field-heading"><h3>HIGHLIGHT INTERVAL</h3><span>Optional</span></div><div class="interval-options" id="target-options" role="group" aria-label="Interval to highlight"></div></section>
         <div class="sidebar-tip"><span class="tip-icon">✧</span><p><strong>A little tip</strong><span id="sidebar-tip-text">Yellow notes mark your root. Try starting your melody here.</span></p></div>
       </aside>
@@ -73,7 +73,7 @@
   <dialog id="help-dialog" aria-labelledby="info-title"><button class="dialog-close icon-button" id="close-help" aria-label="Close information">×</button><span class="eyebrow">WELCOME TO PERDE</span><h2 id="info-title">Your fretboard, explained.</h2><p>Explore notes, connect chords and hear what you see. Choose a tab to get started.</p>
     <h3>01 · Explore</h3><p>Pick a root note and a scale or chord. Yellow dots mark the root. Use <strong>Layer</strong> to compare a scale and chord: two-color dots belong to both.</p>
     <h3>02 · Progressions</h3><p>Choose a key and a chord progression. Tap a chord to see its notes, role and position. Set the tempo and press <strong>Play progression</strong> to hear four beats per chord. Turn on <strong>Loop</strong> to repeat.</p>
-    <h3>03 · Chord Finder</h3><p>Choose any root and one of eight chord types. Switch between <strong>All note locations</strong> and <strong>Playable positions</strong>. Use the arrows or position buttons to explore different fingerings.</p>
+    <h3>03 · Chord Finder</h3><p>Choose any root and one of eight chord types. Switch between <strong>All note locations</strong> and <strong>Playable positions</strong>. Use the arrows or position buttons to explore all five CAGED families: C, A, G, E and D. The shape letter describes the fingering family, not the chord name. Fret ranges show where the grip sits; the root label identifies its root note.</p>
     <h3>04 · TAB Editor</h3><p>Choose a chord and position, or enter your own frets. Pick a whole, half, quarter, eighth or sixteenth note and place it at a bar and beat. Click an event to edit or move it. Add rests, undo changes, play at your tempo or download the TAB. Your score saves in this browser.</p>
     <h3>Read the fretboard</h3><ul><li><strong>Notes:</strong> letter names such as G, A and B.</li><li><strong>Intervals:</strong> degrees relative to the root. In G major, G = R (1), A = 2 and B = 3.</li><li><strong>TAB:</strong> fret numbers. 0 means an open string; × means mute.</li><li><strong>Fingers:</strong> available for playable positions. 1 = index, 2 = middle, 3 = ring, 4 = pinky. A connecting bar shows a barre.</li></ul>
     <p>The high string is on top, just like TAB. On a phone, swipe the fretboard sideways. Tap a note to hear it, or use the play button to hear a scale or chord. The speaker button controls sound when tapping notes.</p>

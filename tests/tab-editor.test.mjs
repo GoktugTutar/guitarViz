@@ -73,6 +73,18 @@ test('TAB Editor composes, edits, saves and plays rhythmic guitar parts',async t
       audio.context.state='suspended';let resolve;audio.context.resume=()=>new Promise(r=>{resolve=()=>{audio.context.state='running';r();};});
       click('#editor-play');click('#tab-chords');const waiting=audio.starts.length;resolve();await clock.tickAsync(5000);assert.equal(audio.starts.length,waiting);
     });
+    await t.test('C, D and G Gmaj7 shapes can be placed in TAB with their exact frets',()=>{
+      click('#tab-editor');click('#editor-clear');select('#editor-root',7);select('#editor-chord','maj7');
+      const choices=$$('#editor-position option');
+      assert.deepEqual([...new Set(choices.filter(o=>o.value!=='custom').map(o=>o.textContent[0]))].sort(),['A','C','D','E','G']);
+      select('#editor-position',choices.find(o=>o.textContent.startsWith('C shape · Frets 7–10')).value);
+      assert.match($('#editor-voicing-hint').textContent,/Root: string 5, fret 10/);
+      click('[data-duration="4"]');click('#editor-add');
+      select('#editor-position',choices.find(o=>o.textContent.startsWith('D shape · Frets 5–7')).value);click('#editor-add');
+      select('#editor-position',choices.find(o=>o.textContent.startsWith('G shape · Frets 12–15')).value);click('#editor-add');
+      assert.deepEqual(saved().events.map(e=>e.frets),[[7,7,7,9,10,null],[7,7,7,5,null,null],[14,12,12,12,14,15]]);
+      assert.ok($$('.score-event strong').every(n=>n.textContent==='Gmaj7'));
+    });
     await t.test('reopening the editor restores exact saved frets and rhythms',()=>{
       const previous=saved();window.dispatchEvent(new window.Event('pagehide'));
       // A fresh controller reads only persisted data, without access to previous state.

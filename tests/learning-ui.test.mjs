@@ -161,6 +161,24 @@ test('learning tabs, chord positions and progression transport work together', a
       assert.equal(sound.starts, starts);
       assert.match($('#play-button').textContent, /Play chord/);
     });
+    await t.test('all five Gmaj7 families appear in Chord Finder and Explorer, including root labels', () => {
+      click('#tab-chords');select('#finder-root',7);select('#finder-chord','maj7');
+      const buttons=$$('#position-picker button');
+      assert.deepEqual([...new Set(buttons.map(b=>b.textContent[0]))].sort(),['A','C','D','E','G']);
+      buttons.find(b=>b.textContent.startsWith('C shape · Frets 7–10')).click();
+      assert.deepEqual(activeNotes().map(n=>Number(n.dataset.fret)),[7,7,7,9,10]);
+      assert.match($('#position-description').textContent,/Root: string 5, fret 10/);
+      buttons.find(b=>b.textContent.startsWith('G shape · Frets 12–15')).click();
+      assert.deepEqual(activeNotes().map(n=>Number(n.dataset.fret)),[14,12,12,12,14,15]);
+      assert.match($('#position-description').textContent,/Root: string 6, fret 15/);
+      click('#tab-explore');click('[data-mode="chord"]');click('[data-root="7"]');click('[data-chord="maj7"]');select('#shape-select','C');
+      assert.deepEqual(activeNotes().map(n=>Number(n.dataset.fret)),[7,7,7,9,10]);
+      assert.match($('#selection-description').textContent,/Root: string 5, fret 10/);
+      select('#shape-select','D');
+      assert.deepEqual(activeNotes().map(n=>Number(n.dataset.fret)),[7,7,7,5]);
+      assert.equal($$('.fret-barre').length,1);
+      assert.equal(JSON.parse(localStorage.getItem('perde-settings')).shape,'D');
+    });
   } finally {
     window.dispatchEvent(new window.Event('pagehide'));
     clock.uninstall(); dom.window.close();

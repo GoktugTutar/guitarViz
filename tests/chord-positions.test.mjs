@@ -10,6 +10,7 @@ test('all roots and chord types have distinct playable alternatives in each supp
         const positions = getChordPositions(root, chord, tuning);
         const context = `${root} ${chord} ${tuning}`;
         assert.ok(positions.length >= 2, context);
+        assert.deepEqual([...new Set(positions.map(position=>position.shape))].sort(), ['A','C','D','E','G'], `every family must be available: ${context}`);
         assert.equal(new Set(positions.map(position => position.id)).size, positions.length, context);
         assert.equal(new Set(positions.map(position => JSON.stringify(position.frets))).size, positions.length, context);
         for (const position of positions) {
@@ -23,6 +24,7 @@ test('all roots and chord types have distinct playable alternatives in each supp
           assert.equal(position.maxFret, Math.max(...played), context);
           assert.equal(position.firstFret, position.isOpen ? 1 : Math.min(...played), context);
           assert.ok(position.maxFret <= 24, context);
+          assert.ok(position.notes.some(note=>note.stringIndex+1===position.rootString && note.fret===position.rootFret && note.isRoot), `root label must name a sounding root: ${context}`);
           for (const note of position.notes) {
             assert.equal(note.fret, position.frets[note.stringIndex], context);
             assert.equal(note.midi, TUNINGS[tuning].notes[note.stringIndex] + note.fret, context);
@@ -35,6 +37,32 @@ test('all roots and chord types have distinct playable alternatives in each supp
       }
     }
   }
+});
+
+test('Gmaj7 spans the complete E-D-C-A-G cycle with the specified roots and fret ranges', () => {
+  const positions=getChordPositions(7,'maj7');
+  const cycle=positions.filter(p=>!p.isOpen).slice(0,5);
+  assert.deepEqual(cycle.map(p=>p.shape),['E','D','C','A','G']);
+  assert.deepEqual(cycle.map(p=>[p.firstFret,p.maxFret,p.rootString,p.rootFret]),[
+    [3,5,6,3],[5,7,4,5],[7,10,5,10],[10,12,5,10],[12,15,6,15],
+  ]);
+  // Independent TAB examples below run low E to high e.
+  assert.deepEqual(cycle.map(p=>[...p.frets].reverse()),[
+    [3,5,4,4,3,3], [null,null,5,7,7,7], [null,10,9,7,7,7],
+    [null,10,12,11,12,10], [15,14,12,12,12,14],
+  ]);
+  for(const position of cycle)assert.deepEqual([...new Set(position.notes.map(n=>n.note))].sort(),['B','D','F♯','G']);
+  assert.deepEqual(positions[0].frets,[2,0,0,0,2,3]);
+  assert.deepEqual(cycle[2].barres,[{fret:7,fromString:0,toString:2,finger:1}]);
+});
+
+test('C-family dominant seventh keeps its fifth; G-family major seventh uses separate outer fingers', () => {
+  const c7=getChordPositions(0,'7').find(p=>p.shape==='C');
+  assert.deepEqual([...c7.frets].reverse(),[null,3,2,3,null,3]);
+  assert.deepEqual([...new Set(c7.notes.map(n=>n.note))].sort(),['B♭','C','E','G']);
+  const gmaj7=getChordPositions(7,'maj7').find(p=>p.shape==='G'&&!p.isOpen);
+  assert.deepEqual(gmaj7.fingers,[2,1,1,1,3,4]);
+  assert.deepEqual(gmaj7.barres,[{fret:12,fromString:1,toString:3,finger:1}]);
 });
 
 test('fingers, open strings, muted strings and barres describe physically coherent shapes', () => {

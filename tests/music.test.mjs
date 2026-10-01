@@ -66,10 +66,10 @@ test('common open C, D and A minor shapes retain conventional fret positions', (
   assert.equal(getChordVoicing(1, 'major', 'open'), null);
 });
 
-test('every E/A shape in every key plays all and only the requested chord tones', () => {
+test('every CAGED shape in every key plays all and only the requested chord tones', () => {
   for (let root = 0; root < 12; root++) {
     for (const [chord, { intervals }] of Object.entries(CHORDS)) {
-      for (const shape of ['auto', 'E', 'A']) {
+      for (const shape of ['auto', 'C', 'A', 'G', 'E', 'D']) {
         for (const tuning of Object.keys(TUNINGS)) {
           const voicing = getChordVoicing(root, chord, shape, tuning);
           assert.ok(voicing);

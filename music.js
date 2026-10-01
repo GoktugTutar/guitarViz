@@ -1,3 +1,5 @@
+import { CAGED_SHAPES, SHAPE_ROOTS, getBarres } from './caged-shapes.js?v=5';
+
 /** Guitar theory helpers. String index 0 is the high E string, as in TAB. */
 export const NOTES = Object.freeze(['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']);
 const FLAT_NOTES = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
@@ -170,18 +172,8 @@ export const OPEN_VOICINGS = Object.freeze({
   '4:minor': { shape: 'E', frets: [0, 0, 0, 2, 2, 0], fingers: [0, 0, 0, 3, 2, 0] },
 });
 
-export const MOVABLE_SHAPES = Object.freeze({
-  E: {
-    major: [0, 0, 1, 2, 2, 0], minor: [0, 0, 0, 2, 2, 0],
-    '7': [0, 0, 1, 0, 2, 0], maj7: [0, 0, 1, 1, 2, 0], m7: [0, 0, 0, 0, 2, 0],
-    dim: [null, null, 0, 2, 1, 0], sus2: [0, 0, 4, 4, 2, 0], sus4: [0, 0, 2, 2, 2, 0],
-  },
-  A: {
-    major: [0, 2, 2, 2, 0, null], minor: [0, 1, 2, 2, 0, null],
-    '7': [0, 2, 0, 2, 0, null], maj7: [0, 2, 1, 2, 0, null], m7: [0, 1, 0, 2, 0, null],
-    dim: [null, 1, 2, 1, 0, null], sus2: [0, 0, 2, 2, 0, null], sus4: [0, 3, 2, 2, 0, null],
-  },
-});
+// Compatibility export: fret patterns and fingerings share one source of truth.
+export const MOVABLE_SHAPES = Object.freeze(Object.fromEntries(Object.entries(CAGED_SHAPES).map(([shape,qualities])=>[shape,Object.freeze(Object.fromEntries(Object.entries(qualities).map(([key,value])=>[key,value.frets])))])));
 
 /**
  * `auto` prefers a common open shape, then the lower E/A shape.
@@ -207,9 +199,10 @@ export function getChordVoicing(root, chord = 'major', shape = 'auto', tuning = 
   } else {
     selectedShape = shape === 'auto' ? (mod12(root - 4) <= mod12(root - 9) ? 'E' : 'A') : shape;
     if (!Object.hasOwn(MOVABLE_SHAPES, selectedShape)) throw new RangeError(`Unknown chord shape: ${shape}`);
-    baseFret = mod12(root - (selectedShape === 'E' ? 4 : 9));
+    baseFret = mod12(root - SHAPE_ROOTS[selectedShape]);
     originalFrets = MOVABLE_SHAPES[selectedShape][chord].map(fret => fret === null ? null : fret + baseFret);
-    isOpen = baseFret === 0;
+    fingers = CAGED_SHAPES[selectedShape][chord].fingers.map((finger,i)=>originalFrets[i]===0?0:finger);
+    isOpen = originalFrets.includes(0);
   }
   const openNotes = tuningNotes(tuning);
   const standard = TUNINGS.standard.notes;
@@ -233,7 +226,8 @@ export function getChordVoicing(root, chord = 'major', shape = 'auto', tuning = 
   return {
     name: `${noteName(root)}${definition.symbol}`, shape: selectedShape, frets, fingers, notes,
     isOpen: isOpen && frets.includes(0),
-    barre: !isOpen && standardTuning ? { fret: baseFret, fromString: 0, toString: selectedShape === 'E' ? 5 : 4 } : null,
+    barres: fingers ? getBarres(frets,fingers) : [],
+    barre: !isOpen && standardTuning ? (()=>{const b=getBarres(frets,fingers).find(b=>b.finger===1);return b?{fret:b.fret,fromString:b.fromString,toString:b.toString}:null;})() : null,
     startFret: minimum <= 1 ? 1 : minimum,
     maxFret: Math.max(...playedFrets),
   };

@@ -1,5 +1,6 @@
-import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, getChordVoicing, spelledNoteName, degreeLabel } from './music.js?v=4';
-import { initLearning } from './learning.js?v=4';
+import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, spelledNoteName, degreeLabel } from './music.js?v=5';
+import { initLearning } from './learning.js?v=5';
+import { getChordPositions } from './chord-positions.js?v=5';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -16,7 +17,7 @@ function restore() {
       fretCount: [12,15,24].includes(saved.fretCount) ? saved.fretCount : 12,
       target: saved.target === null || (Number.isInteger(saved.target) && saved.target >= 0 && saved.target < 12) ? saved.target : 0,
       sound: typeof saved.sound === 'boolean' ? saved.sound : true,
-      shape: ['all','auto','E','A'].includes(saved.shape) ? saved.shape : 'all' };
+      shape: ['all','auto','C','A','G','E','D'].includes(saved.shape) ? saved.shape : 'all' };
   } catch { return {...defaults}; }
 }
 let state = restore();
@@ -60,7 +61,7 @@ function selectionIntervals() { return state.mode === 'chord' ? CHORDS[state.cho
 function labelFor(interval) { const chordOnly = state.mode === 'chord' || (state.mode === 'layer' && !SCALES[state.scale].intervals.includes(interval)); return degreeLabel(interval, chordOnly ? state.chord : state.scale, chordOnly ? 'chord' : 'scale'); }
 function nameFor(interval) { const chordOnly = state.mode === 'chord' || (state.mode === 'layer' && !SCALES[state.scale].intervals.includes(interval)); return spelledNoteName(state.root,interval,chordOnly?state.chord:state.scale,chordOnly?'chord':'scale',state.rootSpelling); }
 function render() {
-  voicing = activePage !== 'explore' ? toolInfo?.position || null : state.mode !== 'scale' && state.shape !== 'all' ? getChordVoicing(state.root,state.chord,state.shape,state.tuning) : null;
+  voicing = activePage !== 'explore' ? toolInfo?.position || null : state.mode !== 'scale' && state.shape !== 'all' ? explorerVoicing(state.shape) : null;
   if (voicing && voicing.maxFret > state.fretCount) state.fretCount = voicing.maxFret <= 15 ? 15 : 24;
   positions = buildFretboard(state);
   if (voicing) positions = positions.map(position => { const inChord = voicing.frets[position.stringIndex] === position.fret; return {...position,inChord,active:state.mode === 'chord' ? inChord : position.inScale || inChord}; });
@@ -77,7 +78,7 @@ function render() {
   $('#selection-eyebrow').textContent = {scale:'SCALE MAP',chord:'CHORD MAP',layer:'SCALE + CHORD LAYER'}[state.mode];
   const rootName = state.rootSpelling || NOTES[state.root], definition = state.mode === 'chord' ? CHORDS[state.chord] : SCALES[state.scale];
   $('#selection-title').innerHTML = `${rootName} <span>${definition.name}</span>${state.mode === 'layer' ? ` <span class="layer-chord">+ ${rootName}${CHORDS[state.chord].symbol}</span>` : ''}<span class="title-dot"></span>`;
-  $('#selection-description').textContent = state.mode === 'chord' ? (voicing ? `${voicing.shape} shape · ${voicing.notes.length} strings · Mute strings marked ×.` : 'Find the notes of your chord across the fretboard.') : state.mode === 'layer' ? 'Two colors, one fretboard. Discover the notes they share.' : definition.description;
+  $('#selection-description').textContent = state.mode === 'chord' ? (voicing ? `${voicing.label} · ${voicing.rootLabel} · Mute strings marked ×.` : 'Find the notes of your chord across the fretboard.') : state.mode === 'layer' ? 'Two colors, one fretboard. Discover the notes they share.' : definition.description;
   $('#sidebar-tip-text').textContent = state.mode === 'chord' ? 'Choose a chord position. Play the vertically aligned TAB numbers together to hear the chord.' : state.mode === 'layer' ? 'Two-color notes belong to both the scale and chord. Try landing on these notes in a solo.' : 'Yellow notes mark your root. Try starting your melody here.';
   $('#scale-legend').hidden = state.mode === 'chord'; $('#chord-legend').hidden = state.mode === 'scale'; $('#overlap-legend').hidden = state.mode !== 'layer';
   $('#board-count').textContent = `6 strings / ${state.fretCount} frets`;
@@ -115,7 +116,7 @@ function renderBoard() {
     board.append(positionedElement(`string-label${muted?' muted':''}`,null,top,muted?'×':stringIndex===0?noteName(midi).toLowerCase():noteName(midi)));
     const line = positionedElement('string-line',null,top); line.style.height = `${1+stringIndex*.23}px`; board.append(line);
   });
-  if (activePage !== 'explore' && voicing) {
+  if (voicing) {
     for (const barre of voicing.barres || []) {
       const top = 41 + 42 * Math.min(barre.fromString,barre.toString);
       const line = positionedElement('fret-barre',fretX(barre.fret),top);
@@ -168,7 +169,11 @@ function makeScaleSequence() {
     const chosen = candidates[0]; previous = chosen; return chosen;
   });
 }
-function selectedVoicing() { return voicing || getChordVoicing(state.root,state.chord,'auto',state.tuning); }
+function explorerVoicing(shape='auto') {
+  const available = getChordPositions(state.root,state.chord,state.tuning,24);
+  return shape === 'auto' ? available[0] : available.find(position=>position.shape===shape);
+}
+function selectedVoicing() { return voicing || explorerVoicing(); }
 function renderTab() {
   if ($('#tab-card').hidden) return;
   const isChord = state.mode === 'chord', sequence = isChord ? selectedVoicing() : makeScaleSequence();

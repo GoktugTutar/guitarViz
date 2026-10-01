@@ -1,7 +1,7 @@
-import { NOTES, CHORDS, spelledNoteName } from './music.js?v=4';
-import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=4';
-import { getChordPositions } from './chord-positions.js?v=4';
-import { initTabEditor } from './tab-editor.js?v=4';
+import { NOTES, CHORDS, spelledNoteName } from './music.js?v=5';
+import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=5';
+import { getChordPositions } from './chord-positions.js?v=5';
+import { initTabEditor } from './tab-editor.js?v=5';
 
 /** The learning tools share the original fretboard and audio renderer. */
 export function initLearning(bridge) {
@@ -96,7 +96,7 @@ export function initLearning(bridge) {
     $('#chord-construction').textContent=`${step.symbol} = ${notes.join(' + ')} · Degree ${step.degree} in ${currentProgression.keyName}`;
     $('#progression-position').replaceChildren(...availablePositions.map((p,i)=>{const option=document.createElement('option');option.value=i;option.textContent=p.label || p.name;return option;}));
     $('#progression-position').value=state.position;$('#progression-position').disabled=!position;
-    $('#progression-position-label').textContent=position?`${position.isOpen?'Position with open strings':'Closed position'} · Frets ${position.firstFret}–${position.maxFret}`:'No verified position is available in this tuning.';
+    $('#progression-position-label').textContent=position?`${position.isOpen?'Position with open strings':'Closed position'} · ${position.rootLabel}`:'No verified position is available in this tuning.';
     $('#progression-status').textContent=`${step.symbol}: ${step.role}`;
     bridge.showChord({root:step.root,chord:step.chord,symbol:step.symbol,position,eyebrow:`${currentProgression.keyName.toUpperCase()} · ${step.roman}`,description:`${step.role} · ${position?(position.label || position.name):'All chord tones'}`});
   }
@@ -113,7 +113,7 @@ export function initLearning(bridge) {
     $('#position-count').textContent=`${availablePositions.length} positions`;
     $('#position-picker').replaceChildren(...availablePositions.map((p,index)=>{const button=document.createElement('button');button.textContent=p.label || p.name;button.classList.toggle('active',index===state.position);button.setAttribute('aria-pressed',String(index===state.position));button.addEventListener('click',()=>choosePosition(index));return button;}));
     $('#position-name').textContent=position?(position.label || position.name):'No position found';
-    $('#position-description').textContent=position?`${state.position+1} / ${availablePositions.length} · Frets ${position.firstFret}–${position.maxFret}${position.barres.length?' · Barre shape':''}`:'Explore all note locations in this tuning instead.';
+    $('#position-description').textContent=position?`${state.position+1} / ${availablePositions.length} · ${position.rootLabel}${position.barres.length?' · Barre shape':''}`:'Explore all note locations in this tuning instead.';
     $('#previous-position').disabled=availablePositions.length<2;$('#next-position').disabled=availablePositions.length<2;
     const table=document.createElement('table');table.innerHTML='<caption>Fret and finger numbers, from high to low string</caption><thead><tr><th scope="col">String</th>'+[1,2,3,4,5,6].map(i=>`<th scope="col">${i}</th>`).join('')+'</tr></thead><tbody><tr><th scope="row">Frets</th>'+(position?position.frets.map(f=>`<td>${f===null?'×':f}</td>`).join(''):'<td colspan="6">—</td>')+'</tr><tr><th scope="row">Finger</th>'+(position?position.frets.map((f,i)=>`<td>${f===null?'×':f===0?'0':position.fingers?.[i]??'—'}</td>`).join(''):'<td colspan="6">—</td>')+'</tr></tbody>';
     $('#fingering-table').replaceChildren(table);

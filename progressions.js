@@ -1,4 +1,4 @@
-import { CHORDS, SCALES, mod12, spelledNoteName } from './music.js?v=4';
+import { CHORDS, SCALES, mod12, spelledNoteName } from './music.js?v=5';
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 const QUALITIES = {

@@ -1,4 +1,5 @@
-import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=4';
+import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=5';
+import { CAGED_SHAPES, CAGED_ORDER, SHAPE_ROOTS, ROOT_ANCHORS, getBarres } from './caged-shapes.js?v=5';
 
 // Every array follows TAB: high e, B, G, D, A, low E. These are explicit
 // fingerings, not arbitrary collections of chord tones found on the neck.
@@ -33,42 +34,6 @@ const OPEN = [
   { root: 9, chord: 'sus4', shape: 'A', frets: [0, 3, 2, 2, 0, null], fingers: [0, 4, 3, 2, 0, null] },
 ];
 
-// Fingers for the closed (base fret > 0) version of each movable shape.
-// A dim has no root-fret barre. Its middle finger makes a short barre one
-// fret higher; E dim bars only strings 3–6, leaving the top two strings mute.
-const MOVABLE = {
-  E: {
-    major: { frets: [0, 0, 1, 2, 2, 0], fingers: [1, 1, 2, 4, 3, 1] },
-    minor: { frets: [0, 0, 0, 2, 2, 0], fingers: [1, 1, 1, 4, 3, 1] },
-    '7': { frets: [0, 0, 1, 0, 2, 0], fingers: [1, 1, 2, 1, 3, 1] },
-    maj7: { frets: [0, 0, 1, 1, 2, 0], fingers: [1, 1, 2, 2, 3, 1] },
-    m7: { frets: [0, 0, 0, 0, 2, 0], fingers: [1, 1, 1, 1, 3, 1] },
-    dim: { frets: [null, null, 0, 2, 1, 0], fingers: [null, null, 1, 3, 2, 1] },
-    sus2: { frets: [0, 0, 4, 4, 2, 0], fingers: [1, 1, 4, 3, 2, 1] },
-    sus4: { frets: [0, 0, 2, 2, 2, 0], fingers: [1, 1, 4, 3, 2, 1] },
-  },
-  A: {
-    major: { frets: [0, 2, 2, 2, 0, null], fingers: [1, 4, 3, 2, 1, null] },
-    minor: { frets: [0, 1, 2, 2, 0, null], fingers: [1, 2, 4, 3, 1, null] },
-    '7': { frets: [0, 2, 0, 2, 0, null], fingers: [1, 4, 1, 3, 1, null] },
-    maj7: { frets: [0, 2, 1, 2, 0, null], fingers: [1, 4, 2, 3, 1, null] },
-    m7: { frets: [0, 1, 0, 2, 0, null], fingers: [1, 2, 1, 3, 1, null] },
-    dim: { frets: [null, 1, 2, 1, 0, null], fingers: [null, 2, 3, 2, 1, null] },
-    sus2: { frets: [0, 0, 2, 2, 0, null], fingers: [1, 1, 4, 3, 1, null] },
-    sus4: { frets: [0, 3, 2, 2, 0, null], fingers: [1, 4, 3, 2, 1, null] },
-  },
-};
-
-function getBarres(frets, fingers) {
-  const barres = [];
-  for (let finger = 1; finger <= 4; finger++) {
-    const strings = fingers.flatMap((value, i) => value === finger ? [i] : []);
-    if (strings.length < 2) continue;
-    barres.push({ fret: frets[strings[0]], fromString: strings[0], toString: strings.at(-1), finger });
-  }
-  return barres;
-}
-
 /**
  * Playable positions, ordered open first and then from low to high frets.
  * Null means mute; 0 means an open string. Finger numbers are 1–4.
@@ -88,10 +53,10 @@ export function getChordPositions(root, chord = 'major', tuning = 'standard', ma
   root = mod12(root);
   const physicalRoot = mod12(root + (tuning === 'halfStepDown' ? 1 : 0));
   const candidates = OPEN.filter(position => position.root === physicalRoot && position.chord === chord);
-  for (const shape of ['E', 'A']) {
-    const template = MOVABLE[shape][chord];
-    const lowestBase = mod12(physicalRoot - (shape === 'E' ? 4 : 9));
-    for (let base = lowestBase || 12; base <= maxFret; base += 12) {
+  for (const shape of CAGED_ORDER) {
+    const template = CAGED_SHAPES[shape][chord];
+    const lowestBase = mod12(physicalRoot - SHAPE_ROOTS[shape]);
+    for (let base = lowestBase; base <= maxFret; base += 12) {
       candidates.push({ shape, frets: template.frets.map(fret => fret === null ? null : fret + base), fingers: template.fingers });
     }
   }
@@ -99,7 +64,7 @@ export function getChordPositions(root, chord = 'major', tuning = 'standard', ma
   const positions = [];
   for (const candidate of candidates) {
     const frets = [...candidate.frets];
-    const fingers = [...candidate.fingers];
+    const fingers = candidate.frets.map((fret,i)=>fret===0?0:candidate.fingers[i]);
     if (tuning === 'dropD') {
       frets[5] = null;
       fingers[5] = null;
@@ -127,10 +92,14 @@ export function getChordPositions(root, chord = 'major', tuning = 'standard', ma
     const isOpen = played.includes(0);
     const firstFret = isOpen ? 1 : Math.min(...played);
     const name = `${noteName(root)}${CHORDS[chord].symbol}`;
+    const anchor = ROOT_ANCHORS[candidate.shape];
+    const rootPosition = notes.find(note=>note.stringIndex===anchor.stringIndex && note.isRoot) || [...notes].reverse().find(note=>note.isRoot);
+    const rootLabel = `Root: string ${rootPosition.stringIndex+1}, fret ${rootPosition.fret}`;
     positions.push({
       id: `${tuning}:${root}:${chord}:${key}`,
       name, shape: candidate.shape,
-      label: `${candidate.shape} shape · ${isOpen ? 'Open position' : `Fret ${firstFret}`}${tuning === 'dropD' ? ' · Mute string 6' : ''}`,
+      label: `${candidate.shape} shape · ${isOpen ? 'Open position' : firstFret === Math.max(...played) ? `Fret ${firstFret}` : `Frets ${firstFret}–${Math.max(...played)}`}${tuning === 'dropD' ? ' · Mute string 6' : ''}`,
+      rootLabel, rootString: rootPosition.stringIndex+1, rootFret: rootPosition.fret,
       frets, fingers, barres: getBarres(frets, fingers), notes, firstFret,
       maxFret: Math.max(...played), isOpen,
     });

@@ -1,6 +1,6 @@
-import { NOTES, CHORDS, TUNINGS, mod12 } from './music.js?v=4';
-import { getChordPositions } from './chord-positions.js?v=4';
-import { DURATIONS, EMPTY_SCORE, tickLabel, chordNotes, matchesChord, eventName, validateScore, placeEvent, resizeScore, tabText } from './tab-score.js?v=4';
+import { NOTES, CHORDS, TUNINGS, mod12 } from './music.js?v=5';
+import { getChordPositions } from './chord-positions.js?v=5';
+import { DURATIONS, EMPTY_SCORE, tickLabel, chordNotes, matchesChord, eventName, validateScore, placeEvent, resizeScore, tabText } from './tab-score.js?v=5';
 
 const STORAGE='perde-tab-score-v1';
 export function initTabEditor(bridge) {
@@ -60,7 +60,7 @@ export function initTabEditor(bridge) {
     const found=positions.findIndex(p=>p.frets.every((f,i)=>f===frets[i]));$('#editor-position').value=found<0?'custom':String(found);
     $('#editor-chord-name').textContent=exact?symbol:'Custom voicing';
     $('#editor-chord-notes').textContent=chordNotes(frets,score.tuning).map(n=>NOTES[mod12(n.midi)]).join(' · ')||'All strings muted';
-    $('#editor-voicing-hint').textContent=exact?`${symbol} chord tones. Check that your custom fingering feels comfortable.`:`These frets do not contain exactly the notes of ${symbol}. They will be labeled “Custom”.`;
+    $('#editor-voicing-hint').textContent=exact?(found>=0?`${positions[found].label} · ${positions[found].rootLabel}`:`${symbol} chord tones. Check that your custom fingering feels comfortable.`):`These frets do not contain exactly the notes of ${symbol}. They will be labeled “Custom”.`;
     $('#editor-add').disabled=!frets.some(f=>f!==null);$('#editor-audition').disabled=!frets.some(f=>f!==null);
   }
   function renderPlacement(){

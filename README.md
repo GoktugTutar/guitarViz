@@ -15,7 +15,9 @@ An interactive horizontal guitar fretboard built with HTML, CSS and JavaScript. 
 
 The high string is at the top, as in TAB. Swipe horizontally on smaller screens. R means the root (degree 1), 0 means an open string and × means mute. Finger numbers are 1 index, 2 middle, 3 ring and 4 pinky.
 
-The position library currently covers common open chords and movable E/A shapes. It is **not a complete five-shape CAGED library**. Some open C/G/D shapes are included. Chord Finder mutes string 6 in Drop D to retain verified fingerings on the upper strings.
+The position library covers all five CAGED families (C, A, G, E and D) for the eight supported chord types. Shape letters refer to fingering families, not chord names. Altered chord qualities use compact variants where a full grip is impractical. Each returned voicing contains every chord tone, with explicit fingerings and barres. Positions include available octave repeats through fret 24; a shorter neck can hide shapes that do not fit. Chord Finder mutes string 6 in Drop D and checks the remaining chord tones.
+
+For Gmaj7 in standard tuning, the first closed cycle is E (frets 3–5), D (5–7), C (7–10), A (10–12), G (12–15). The open G-family voicing is also available. The C-family root is on string 5, fret 10, even though the grip begins at fret 7. Root-string labels always refer to a sounding root. All views use the shared `caged-shapes.js` templates.
 
 ## Writing TAB
 
