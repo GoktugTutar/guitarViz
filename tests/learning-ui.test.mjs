@@ -69,6 +69,36 @@ test('learning tabs, chord positions and progression transport work together', a
       assert.equal($('[data-display="intervals"]').getAttribute('aria-pressed'), 'true');
     });
 
+    await t.test('the full progression TAB shows all chords and preserves independent CAGED choices', () => {
+      click('#tab-progressions');select('#progression-root',7);select('#progression-mode','major');
+      const frets=bar=>$$(`#progression-tab tbody [data-tab-bar="${bar}"] b`).map(n=>n.textContent);
+      assert.deepEqual($$('#progression-tab thead strong').map(n=>n.textContent),['G','D','Em','C']);
+      assert.equal($$('#progression-tab tbody tr').length,6);
+      assert.equal($$('#progression-tab .progression-tab-onset').length,24);
+      assert.deepEqual(frets(0),['3','0','0','0','2','3']);
+      const choose=(bar,prefix)=>select(`[data-progression-voicing="${bar}"]`,$$(`[data-progression-voicing="${bar}"] option`).find(o=>o.textContent.startsWith(prefix)).value);
+      choose(0,'E shape');choose(1,'A shape');
+      assert.deepEqual(frets(0),['3','3','4','5','5','3']);
+      assert.deepEqual(frets(1),['5','7','7','7','5','×']);
+      click('[data-tab-step="0"]');
+      select('#progression-position',$$('#progression-position option').find(o=>o.textContent.startsWith('C shape')).value);
+      assert.deepEqual(frets(0),['7','8','7','9','10','×']);
+      assert.deepEqual(frets(1),['5','7','7','7','5','×']);
+      const before=$$('#progression-tab tbody b').map(n=>n.textContent);
+      click('#tab-explore');click('#tab-progressions');
+      assert.deepEqual($$('#progression-tab tbody b').map(n=>n.textContent),before);
+      $$('#diatonic-chords button')[1].click();
+      assert.deepEqual($$('#progression-tab tbody b').map(n=>n.textContent),before);
+      assert.match($('#progression-role').textContent,/Diatonic preview/);
+      select('#progression-select','jazz');assert.equal($$('#progression-tab thead strong').length,3);
+      select('#progression-root',5);select('#progression-select','pop');
+      assert.deepEqual($$('#progression-tab thead strong').map(n=>n.textContent),['F','C','Dm','B♭']);
+      assert.match($('#progression-tab thead [data-tab-step="3"] small').textContent,/B♭/);
+      select('#tuning-select','dropD');
+      assert.ok($$('#progression-tab tbody tr:last-child b').every(n=>n.textContent==='×'));
+      select('#tuning-select','standard');
+    });
+
     await t.test('a chosen barre position maps exact frets and fingers, with all-notes view distinct', () => {
       click('#tab-chords'); select('#finder-root', 5); select('#finder-chord', 'major');
       assert.match($('#finder-name').textContent, /^F$/);
@@ -119,13 +149,18 @@ test('learning tabs, chord positions and progression transport work together', a
       click('#progression-play'); await clock.tickAsync(0);
       assert.match($('#progression-play').textContent, /Stop/);
       assert.match($('#selection-title').textContent, /^G/);
+      assert.ok($('#progression-tab thead th[data-tab-bar="0"]').classList.contains('is-playing'));
+      assert.ok($('#progression-tab [data-tab-bar="0"][data-tab-beat="0"]').classList.contains('is-current-beat'));
       assert.ok(sound.starts > before);
       await clock.tickAsync(1999); assert.match($('#selection-title').textContent, /^G/);
+      assert.ok($('#progression-tab [data-tab-bar="0"][data-tab-beat="3"]').classList.contains('is-current-beat'));
       await clock.tickAsync(1); assert.match($('#selection-title').textContent, /^D/);
+      assert.ok($('#progression-tab thead th[data-tab-bar="1"]').classList.contains('is-playing'));
       await clock.tickAsync(2000); assert.match($('#selection-title').textContent, /^Em/);
       await clock.tickAsync(2000); assert.match($('#selection-title').textContent, /^C/);
       await clock.tickAsync(2000); assert.match($('#progression-play').textContent, /Play progression/);
       assert.equal($$('.beat-meter .active').length, 0);
+      assert.equal($$('#progression-tab .is-playing').length,0);
     });
 
     await t.test('repeat loops; switching tabs and changing tempo cancel pending playback', async () => {

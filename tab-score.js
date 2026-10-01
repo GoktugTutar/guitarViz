@@ -1,4 +1,4 @@
-import { CHORDS, NOTES, TUNINGS, mod12 } from './music.js?v=5';
+import { CHORDS, NOTES, TUNINGS, mod12 } from './music.js?v=6';
 
 // Time is stored in sixteenth-note ticks: four ticks per quarter-note beat.
 export const TICKS_PER_BAR = 16;

@@ -1,5 +1,5 @@
-import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=5';
-import { CAGED_SHAPES, CAGED_ORDER, SHAPE_ROOTS, ROOT_ANCHORS, getBarres } from './caged-shapes.js?v=5';
+import { CHORDS, OPEN_VOICINGS, TUNINGS, degreeLabel, mod12, noteName, spelledNoteName } from './music.js?v=6';
+import { CAGED_SHAPES, CAGED_ORDER, SHAPE_ROOTS, ROOT_ANCHORS, getBarres } from './caged-shapes.js?v=6';
 
 // Every array follows TAB: high e, B, G, D, A, low E. These are explicit
 // fingerings, not arbitrary collections of chord tones found on the neck.

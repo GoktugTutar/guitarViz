@@ -1,6 +1,6 @@
-import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, spelledNoteName, degreeLabel } from './music.js?v=5';
-import { initLearning } from './learning.js?v=5';
-import { getChordPositions } from './chord-positions.js?v=5';
+import { NOTES, TUNINGS, SCALES, CHORDS, mod12, noteName, intervalLabel, buildFretboard, spelledNoteName, degreeLabel } from './music.js?v=6';
+import { initLearning } from './learning.js?v=6';
+import { getChordPositions } from './chord-positions.js?v=6';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];

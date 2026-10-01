@@ -1,7 +1,9 @@
-import { NOTES, CHORDS, spelledNoteName } from './music.js?v=5';
-import { PROGRESSIONS, getProgression, getDiatonicChords } from './progressions.js?v=5';
-import { getChordPositions } from './chord-positions.js?v=5';
-import { initTabEditor } from './tab-editor.js?v=5';
+import { NOTES, CHORDS, TUNINGS, noteName, spelledNoteName } from './music.js?v=6';
+import { PROGRESSIONS, getDiatonicChords } from './progressions.js?v=6';
+import { getChordPositions } from './chord-positions.js?v=6';
+import { initTabEditor } from './tab-editor.js?v=6';
+
+import { buildProgressionTab } from './progression-tab.js?v=6';
 
 /** The learning tools share the original fretboard and audio renderer. */
 export function initLearning(bridge) {
@@ -12,13 +14,21 @@ export function initLearning(bridge) {
   const state = { page:'explore', root:7, mode:'major', progression:PROGRESSIONS.major[0].id, step:0, customStep:null, finderRoot:7, chord:'major', view:'positions', position:0, bpm:80, loop:false };
   let playing = false, transportToken = 0, timer = null, currentBeat = 0;
   let currentProgression, availablePositions = [];
+  let progressionPositions = {}, progressionTuning;
 
   $('#progressions-panel').innerHTML = `
-    <div class="learning-heading"><div><span class="eyebrow">CONNECT THE CHORDS</span><h2>From one chord <em>to the next.</em></h2><p>Choose a key. See the progression, hear it and follow along on the fretboard.</p></div><span class="section-number">02 /</span></div>
+    <div class="learning-heading"><div><span class="eyebrow">CONNECT THE CHORDS</span><h2>From one chord <em>to the next.</em></h2><p>Choose a progression. See every chord together in TAB, then hear the whole sequence.</p></div><span class="section-number">02 /</span></div>
     <div class="learning-fields"><label>KEY<select id="progression-root">${rootOptions}</select></label><label>MODE<select id="progression-mode"><option value="major">Major</option><option value="minor">Minor</option></select></label><label class="wide-field">CHORD PROGRESSION<select id="progression-select"></select></label></div>
     <p class="progression-description" id="progression-description"></p>
     <div class="progression-steps" id="progression-steps" role="group" aria-label="Progression chords"></div>
     <div class="transport"><button id="progression-play" class="primary-button transport-play" aria-label="Play progression">▶ Play progression</button><label class="tempo-label" for="progression-tempo">Tempo <output id="tempo-value">80 BPM</output><input id="progression-tempo" type="range" min="40" max="180" step="5" value="80"></label><label class="loop-label"><input id="progression-loop" type="checkbox"> Loop</label><div class="beat-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div><span class="bar-duration">4 beats per chord</span></div>
+
+    <section class="progression-tab-card" aria-labelledby="progression-tab-title">
+      <div class="progression-tab-heading"><div><span class="eyebrow">THE WHOLE SEQUENCE</span><h3 id="progression-tab-title">Full progression TAB</h3></div><span id="progression-tab-meta"></span></div>
+      <div id="progression-tab-scroll" class="progression-tab-scroll" tabindex="0" role="region" aria-label="Complete progression guitar TAB"><table id="progression-tab"></table></div>
+      <p class="progression-tab-help">High string on top · Numbers = frets · Small letters = sounding notes · × = mute · ~ = sustain. Play each chord once and hold for 4 beats. Swipe sideways on a phone.</p>
+      <div id="progression-tab-positions" class="progression-tab-positions" role="group" aria-label="Choose a position for each progression chord"></div>
+    </section>
     <div class="progression-explanation"><span class="small-card-icon">⌁</span><div><h3 id="progression-role"></h3><p id="progression-explanation"></p><p class="chord-construction" id="chord-construction"></p></div></div>
     <details class="degree-details"><summary>How are the 7 chords in this key built?</summary><p>Start on any scale note and take every other note to build a triad: 1–3–5. As the starting note changes, so do the chord root and quality.</p><div class="diatonic-chords" id="diatonic-chords" role="group" aria-label="Diatonic chords in this key"></div><p id="roman-help">Uppercase Roman numerals mean major, lowercase mean minor, and ° means diminished. Minor-key degrees are numbered relative to the natural minor scale.</p></details>
     <div class="position-mini"><span id="progression-position-label"></span><label>Position<select id="progression-position" aria-label="Position of the selected progression chord"></select></label></div>
@@ -44,7 +54,7 @@ export function initLearning(bridge) {
   $('#progression-root').addEventListener('change',event=>changeProgression({root:Number(event.target.value)}));
   $('#progression-mode').addEventListener('change',event=>changeProgression({mode:event.target.value,progression:PROGRESSIONS[event.target.value][0].id}));
   $('#progression-select').addEventListener('change',event=>changeProgression({progression:event.target.value}));
-  $('#progression-position').addEventListener('change',event=>{stop();state.position=Number(event.target.value);showProgressionChord();});
+  $('#progression-position').addEventListener('change',event=>{stop();state.position=Number(event.target.value);if(!state.customStep){progressionPositions[state.step]=availablePositions[state.position].id;rebuildProgression();renderProgressionTab();}showProgressionChord();});
   $('#progression-tempo').addEventListener('input',event=>{stop();state.bpm=Number(event.target.value);$('#tempo-value').textContent=`${state.bpm} BPM`;});
   $('#progression-loop').addEventListener('change',event=>{state.loop=event.target.checked;});
   $('#progression-play').addEventListener('click',()=>playing?stop():start());
@@ -65,9 +75,13 @@ export function initLearning(bridge) {
     bridge.setPage(page);
     if(page==='progressions')renderProgression(); else if(page==='chords')renderFinder();
   }
-  function changeProgression(change){stop();Object.assign(state,change,{step:0,customStep:null,position:0});renderProgression();}
+  function changeProgression(change){stop();progressionPositions={};Object.assign(state,change,{step:0,customStep:null,position:0});renderProgression();}
+  function rebuildProgression(){
+    const tuning=bridge.getTuning();if(progressionTuning!==tuning)progressionPositions={};progressionTuning=tuning;
+    currentProgression=buildProgressionTab(state.root,state.mode,state.progression,tuning,progressionPositions);
+  }
   function renderProgression(){
-    currentProgression=getProgression(state.root,state.mode,state.progression);
+    rebuildProgression();
     $('#progression-select').replaceChildren(...PROGRESSIONS[state.mode].map(def=>{const option=document.createElement('option');option.value=def.id;option.textContent=`${def.roman} · ${def.name}`;return option;}));
     $('#progression-select').value=state.progression;
     $('#progression-description').textContent=currentProgression.description;
@@ -82,14 +96,72 @@ export function initLearning(bridge) {
       button.setAttribute('aria-label',`Show ${step.symbol}, degree ${step.roman}`);
       button.addEventListener('click',()=>{stop();state.customStep=step;state.position=0;showProgressionChord();});return button;
     }));
+    renderProgressionTab();
     showProgressionChord();
   }
+
+  function renderProgressionTab(){
+    const {bars,tuning}=currentProgression;
+    $('#progression-tab-meta').textContent=bars.length+' bars · 4/4 · '+TUNINGS[tuning].name;
+    const table=$('#progression-tab');const scroll=$('#progression-tab-scroll').scrollLeft;
+    table.replaceChildren();
+    const caption=document.createElement('caption');caption.className='sr-only';caption.textContent=currentProgression.keyName+' · '+currentProgression.roman+' · Complete progression TAB';table.append(caption);
+    const head=document.createElement('thead'),chords=document.createElement('tr'),counts=document.createElement('tr');
+    chords.innerHTML='<th scope="col" class="progression-tab-string">String</th>';counts.innerHTML='<th scope="row" class="progression-tab-string">Beat</th>';
+    for(const bar of bars){
+      const th=document.createElement('th');th.colSpan=4;th.scope='colgroup';th.dataset.tabBar=bar.index;
+      const button=document.createElement('button');button.className='progression-tab-chord';button.dataset.tabStep=bar.index;
+      button.innerHTML='<span>BAR '+(bar.index+1)+' · '+bar.roman+'</span><strong>'+bar.symbol+'</strong><small>'+bar.chordNotes.join(' · ')+'</small>';
+      button.setAttribute('aria-label','Select '+bar.symbol+', bar '+(bar.index+1));
+      button.addEventListener('click',()=>{stop();state.step=bar.index;state.customStep=null;showProgressionChord();});th.append(button);chords.append(th);
+      for(let beat=0;beat<4;beat++){const td=document.createElement('td');td.dataset.tabBar=bar.index;td.dataset.tabBeat=beat;td.textContent=beat+1;counts.append(td);}
+    }
+    head.append(chords,counts);table.append(head);const body=document.createElement('tbody');
+    TUNINGS[tuning].notes.forEach((midi,stringIndex)=>{
+      const row=document.createElement('tr');row.dataset.tabString=stringIndex;
+      const label=document.createElement('th');label.className='progression-tab-string';label.scope='row';label.textContent=stringIndex===0?noteName(midi).toLowerCase():noteName(midi);label.setAttribute('aria-label','String '+(stringIndex+1)+', '+noteName(midi));row.append(label);
+      for(const bar of bars){
+        const fret=bar.position.frets[stringIndex],note=bar.position.notes.find(n=>n.stringIndex===stringIndex);
+        for(let beat=0;beat<4;beat++){
+          const td=document.createElement('td');td.dataset.tabBar=bar.index;td.dataset.tabBeat=beat;
+          if(beat===0){td.className='progression-tab-onset';const number=document.createElement('b');number.textContent=fret===null?'×':String(fret);td.append(number);
+            const name=document.createElement('small');name.textContent=note?.note||'mute';td.append(name);td.setAttribute('aria-label','Bar '+(bar.index+1)+', string '+(stringIndex+1)+', '+(fret===null?'mute':'fret '+fret+', '+note.note));
+          }else{td.className='progression-tab-sustain';td.textContent=fret===null?'–':'~';td.setAttribute('aria-label',fret===null?'Muted string':'Sustain');}
+          row.append(td);
+        }
+      }
+      body.append(row);
+    });table.append(body);
+    $('#progression-tab-positions').replaceChildren(...bars.map(bar=>{
+      const label=document.createElement('label');label.className='progression-tab-position';
+      const title=document.createElement('span');title.textContent='BAR '+(bar.index+1)+' · '+bar.symbol;label.append(title);
+      const select=document.createElement('select');select.dataset.progressionVoicing=bar.index;select.setAttribute('aria-label','Position for '+bar.symbol+' in bar '+(bar.index+1));
+      for(const p of bar.positions){const option=document.createElement('option');option.value=p.id;option.textContent=p.label;select.append(option);}select.value=bar.position.id;
+      select.addEventListener('change',()=>{stop();state.step=bar.index;state.customStep=null;progressionPositions[bar.index]=select.value;rebuildProgression();renderProgressionTab();showProgressionChord();$('[data-progression-voicing="'+bar.index+'"]').focus({preventScroll:true});});
+      label.append(select);return label;
+    }));
+    $('#progression-tab-scroll').scrollLeft=scroll;updateProgressionTabState();
+  }
+  function updateProgressionTabState(){
+    $$('[data-tab-bar]').forEach(el=>{const chosen=!state.customStep&&Number(el.dataset.tabBar)===state.step;el.classList.toggle('is-selected',chosen);el.classList.toggle('is-playing',chosen&&playing);el.classList.toggle('is-current-beat',chosen&&playing&&Number(el.dataset.tabBeat)===currentBeat);});
+    $$('[data-tab-step]').forEach(el=>el.setAttribute('aria-pressed',String(!state.customStep&&Number(el.dataset.tabStep)===state.step)));
+  }
+  function scrollToPlayingBar(){
+    const wrapper=$('#progression-tab-scroll'),cell=$('thead [data-tab-bar="'+state.step+'"]');if(!cell)return;
+    const left=cell.offsetLeft,right=left+cell.offsetWidth;
+    if(left<wrapper.scrollLeft+48||right>wrapper.scrollLeft+wrapper.clientWidth)wrapper.scrollLeft=Math.max(0,left-48);
+  }
+
   function selectedStep(){return state.customStep||currentProgression.steps[state.step];}
   function showProgressionChord(){
-    const step=selectedStep(); availablePositions=getChordPositions(step.root,step.chord,bridge.getTuning(),24);
-    state.position=Math.min(state.position,Math.max(0,availablePositions.length-1)); const position=availablePositions[state.position]||null;
+    const step=selectedStep();
+    const bar=state.customStep?null:currentProgression.bars[state.step];
+    availablePositions=bar?bar.positions:getChordPositions(step.root,step.chord,bridge.getTuning(),24);
+    state.position=bar?availablePositions.findIndex(p=>p.id===bar.position.id):Math.min(state.position,Math.max(0,availablePositions.length-1));
+    const position=bar?bar.position:availablePositions[state.position]||null;
+    updateProgressionTabState();
     $$('#progression-steps button').forEach((button,index)=>{const active=!state.customStep&&index===state.step;button.classList.toggle('selected',active);button.setAttribute('aria-pressed',String(active));button.classList.toggle('is-playing',active&&playing);});
-    $('#progression-role').textContent=`${step.roman} · ${step.symbol} — ${step.role}`;
+    $('#progression-role').textContent=`${state.customStep?'Diatonic preview · ':''}${step.roman} · ${step.symbol} — ${step.role}`;
     $('#progression-explanation').textContent=step.explanation;
     const rootName=step.symbol.match(/^[A-G][♯♭]*/)[0];
     const notes=CHORDS[step.chord].intervals.map(interval=>spelledNoteName(step.root,interval,step.chord,'chord',rootName));
@@ -123,21 +195,22 @@ export function initLearning(bridge) {
     $('#progression-play').textContent=playing?'■ Stop':'▶ Play progression';$('#progression-play').setAttribute('aria-label',playing?'Stop progression':'Play progression');
     $$('.beat-meter i').forEach((dot,i)=>dot.classList.toggle('active',playing&&i===currentBeat));
     $$('#progression-steps button').forEach((button,index)=>button.classList.toggle('is-playing',playing&&!state.customStep&&index===state.step));
+    updateProgressionTabState();
   }
   function stop(){transportToken++;clearTimeout(timer);timer=null;playing=false;editor.stop();bridge.stopAudio();updateTransport();}
   async function start(){
     stop();const token=transportToken;playing=true;updateTransport();
     if(!await bridge.prepareAudio()||token!==transportToken){if(token===transportToken){playing=false;updateTransport();}return;}
-    state.step=0;state.customStep=null;state.position=0;currentBeat=0;
+    state.step=0;state.customStep=null;currentBeat=0;
     const beatLength=60000/state.bpm;let deadline=performance.now();
     const tick=()=>{
       if(token!==transportToken)return;
-      if(currentBeat===0){showProgressionChord();const position=availablePositions[state.position];if(position)bridge.strum(position.notes);}
+      if(currentBeat===0){showProgressionChord();const position=currentProgression.bars[state.step].position;bridge.playTimedChord(position.notes,4*beatLength/1000);scrollToPlayingBar();}
       updateTransport();deadline+=beatLength;
       timer=setTimeout(()=>{
         if(token!==transportToken)return;
         currentBeat=(currentBeat+1)%4;
-        if(currentBeat===0){state.step++;state.position=0;if(state.step>=currentProgression.steps.length){if(state.loop)state.step=0;else{state.step=currentProgression.steps.length-1;stop();return;}}}
+        if(currentBeat===0){state.step++;if(state.step>=currentProgression.steps.length){if(state.loop)state.step=0;else{state.step=currentProgression.steps.length-1;stop();return;}}}
         tick();
       },Math.max(0,deadline-performance.now()));
     };

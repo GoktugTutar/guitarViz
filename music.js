@@ -1,4 +1,4 @@
-import { CAGED_SHAPES, SHAPE_ROOTS, getBarres } from './caged-shapes.js?v=5';
+import { CAGED_SHAPES, SHAPE_ROOTS, getBarres } from './caged-shapes.js?v=6';
 
 /** Guitar theory helpers. String index 0 is the high E string, as in TAB. */
 export const NOTES = Object.freeze(['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']);

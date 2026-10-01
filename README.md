@@ -7,7 +7,7 @@ An interactive horizontal guitar fretboard built with HTML, CSS and JavaScript. 
 ## Features
 
 - **Explore:** eight scales, eight chord types and a scale/chord overlay. Switch between note names, intervals and fret numbers. Explorer settings persist in the current browser.
-- **Progressions:** eight major/minor presets, Roman numerals, chord functions and explanations of the seven diatonic triads. Play four beats per chord at 40–180 BPM, with optional looping.
+- **Progressions:** choose one of eight major/minor presets to see the entire progression in one horizontal TAB score. Each chord has a four-beat bar with fret numbers and contextually spelled note names. Choose a CAGED position independently for each bar; playback follows those positions, highlights the current bar/beat, and scrolls within the TAB on smaller screens. Key, preset or tuning changes rebuild the score. Roman numerals, chord functions and the seven diatonic triads remain available below.
 - **Chord Finder:** see every chord-tone location or browse playable positions with fret and finger numbers, muted strings and barres.
 - **TAB Editor:** build 1–8 bars in 4/4 with chords or rests at any sixteenth-note slot. Choose whole, half, quarter, eighth or sixteenth durations, move/edit events, use custom frets (0–24 or mute on each string), and play at 40–180 BPM. Undo/redo, local autosave and plain-text TAB download are included.
 - **Info:** a top-right guide to the controls, notation, sound and mobile fretboard navigation.

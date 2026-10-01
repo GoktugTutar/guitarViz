@@ -1,6 +1,6 @@
-import { NOTES, CHORDS, TUNINGS, mod12 } from './music.js?v=5';
-import { getChordPositions } from './chord-positions.js?v=5';
-import { DURATIONS, EMPTY_SCORE, tickLabel, chordNotes, matchesChord, eventName, validateScore, placeEvent, resizeScore, tabText } from './tab-score.js?v=5';
+import { NOTES, CHORDS, TUNINGS, mod12 } from './music.js?v=6';
+import { getChordPositions } from './chord-positions.js?v=6';
+import { DURATIONS, EMPTY_SCORE, tickLabel, chordNotes, matchesChord, eventName, validateScore, placeEvent, resizeScore, tabText } from './tab-score.js?v=6';
 
 const STORAGE='perde-tab-score-v1';
 export function initTabEditor(bridge) {
